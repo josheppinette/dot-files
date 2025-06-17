@@ -73,11 +73,14 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Filetype Overrides ]]
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = { "user-data", "meta-data" },
-	callback = function()
-		vim.bo.filetype = "yaml"
-	end,
+vim.filetype.add({
+	filename = {
+		["user-data"] = "yaml",
+		["meta-data"] = "yaml",
+	},
+	extension = {
+		bean = "beancount",
+	},
 })
 
 -- [[ EXPAND 4 ]]
@@ -89,6 +92,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- [[ EXPAND 2 ]]
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = {
+		"beancount",
 		"haskell",
 		"cabal",
 		"phtml",
@@ -297,6 +301,7 @@ require("lazy").setup({
 				end,
 				formatters_by_ft = {
 					html = prettier,
+					beancount = { "bean-format" },
 					cabal = { "cabal_fmt" },
 					lisp = { "cljfmt" },
 					javascript = prettier,
