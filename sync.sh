@@ -7,9 +7,13 @@ export HOST=$(hostname)
 
 system_darwin() {
 	if ! command -v darwin-rebuild; then
-		nix run --extra-experimental-features nix-command flakes nix-darwin/nix-darwin-24.11 -- switch --flake "." --impure
+		sudo --preserve-env=HOST \
+			nix run \
+			--extra-experimental-features nix-command flakes \
+			nix-darwin/nix-darwin-24.11 -- switch --flake "." --impure
 	else
-		darwin-rebuild switch --flake "." --impure --option sandbox false
+		sudo --preserve-env=HOST \
+			darwin-rebuild switch --flake "." --impure
 	fi
 }
 

@@ -36,7 +36,7 @@
 
   users.users.${user}.home = home;
 
-  system.stateVersion = 5;
+  system.stateVersion = 6;
 
   home-manager = {
     useGlobalPkgs = true;

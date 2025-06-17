@@ -25,11 +25,55 @@ $ direnv allow
 $ pre-commit install
 ```
 
-**Precommit**
+**Making Changes**
 
-```sh
-$ pre-commit run --all
-```
+After any changes have been made, run `./sync.sh` to update the system.
+
+**Software Updates**
+
+Nix releases major version updates every six months and security fixes throughout that period. We should maintain updated software by running the following steps on all machines at a regular cadence.
+
+1. Note system version
+
+    > We will use this system version to run a report at the end of the upgrade process.
+
+    ```sh
+    $ readlink /nix/var/nix/profiles/system
+    ```
+
+1. Update configuration
+
+    a. Update flake inputs
+    b. Update nix-darwin configuration and state version given latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
+    c. Update home-manager configuration and state version given latest [changes](https://nix-community.github.io/home-manager/release-notes.xhtml)
+
+
+2. Run flake update
+
+    ```sh
+    $ nix flake update
+    ```
+3. Sync
+
+    > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful.
+
+    ```sh
+    ./sync.sh
+    ```
+
+4. Report changes
+
+    ```sh
+    $ nix store diff-closures \
+      /nix/var/nix/profiles/system \
+      /nix/var/nix/profiles/system-<version>-link
+    ```
+
+5. Commit & Push
+
+    ```
+    $ git commit -am "<msg>" && git push
+    ```
 
 # References
 

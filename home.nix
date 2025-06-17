@@ -10,7 +10,7 @@
 
   home.username = user;
   home.homeDirectory = home;
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.05";
 
   home.packages =
     [
@@ -124,7 +124,7 @@
       fda = "fd --hidden --exclude .git --exclude .direnv --exclude __pycache__ --type f";
     };
     defaultKeymap = "emacs";
-    initExtra = ''
+    initContent = ''
       PROMPT='%F{blue}%~%f $ '
 
       function git-open() { (
