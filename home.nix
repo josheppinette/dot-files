@@ -38,7 +38,6 @@
       pkgs.python312
 
       # lsp
-      pkgs.beancount-language-server
       pkgs.clang-tools
       pkgs.haskell-language-server
       pkgs.lua-language-server

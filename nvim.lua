@@ -78,9 +78,6 @@ vim.filetype.add({
 		["user-data"] = "yaml",
 		["meta-data"] = "yaml",
 	},
-	extension = {
-		bean = "beancount",
-	},
 })
 
 -- [[ EXPAND 4 ]]
@@ -92,7 +89,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- [[ EXPAND 2 ]]
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = {
-		"beancount",
+		"ledger",
 		"haskell",
 		"cabal",
 		"phtml",
@@ -250,8 +247,23 @@ require("lazy").setup({
 				require("cmp_nvim_lsp").default_capabilities()
 			)
 
-			-- You can find the list of all supported servers [here](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md). In a buffer, you can see the current LSP status with :LspInfo.
+			local configs = require("lspconfig.configs")
+
+			-- Custom server configurations
+			if not configs.hledger_ls then
+				configs.hledger_ls = {
+					default_config = {
+						cmd = { "hledger-language-server" },
+						filetypes = { "ledger" },
+						root_dir = require("lspconfig").util.root_pattern(".git"),
+					},
+				}
+			end
+
+			-- Check buffer status with :LspInfo
+			-- See all pre-configured servers with :help lspconfig-all
 			local servers = {
+				hledger_ls = {},
 				clangd = {},
 				gopls = {},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
@@ -300,8 +312,8 @@ require("lazy").setup({
 					}
 				end,
 				formatters_by_ft = {
+					ledger = { "hledger-fmt" },
 					html = prettier,
-					beancount = { "bean-format" },
 					cabal = { "cabal_fmt" },
 					lisp = { "cljfmt" },
 					javascript = prettier,
