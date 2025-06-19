@@ -337,7 +337,6 @@ require("lazy").setup({
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-buffer",
 			"onsails/lspkind.nvim",
 		},
 		config = function()
@@ -375,7 +374,6 @@ require("lazy").setup({
 				sources = {
 					{ name = "nvim_lsp" },
 					{ name = "path" },
-					{ name = "buffer" },
 				},
 			})
 		end,
