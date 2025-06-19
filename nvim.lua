@@ -247,50 +247,40 @@ require("lazy").setup({
 				require("cmp_nvim_lsp").default_capabilities()
 			)
 
-			local configs = require("lspconfig.configs")
+			vim.lsp.config("*", { capabilities = capabilities })
 
-			-- Custom server configurations
-			if not configs.hledger_ls then
-				configs.hledger_ls = {
-					default_config = {
-						cmd = { "hledger-language-server" },
-						filetypes = { "ledger" },
-						root_dir = require("lspconfig").util.root_pattern(".git"),
-					},
-				}
-			end
-
-			-- Check buffer status with :LspInfo
-			-- See all pre-configured servers with :help lspconfig-all
 			local servers = {
-				hledger_ls = {},
+				hledger_ls = {
+					cmd = { "hledger-language-server" },
+					filetypes = { "ledger" },
+					root_markers = { ".git" },
+				},
 				clangd = {},
 				gopls = {},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
 				phpactor = {},
 				taplo = {},
-				lua_ls = { Lua = { diagnostics = { globals = { "vim" } } } },
+				lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
 				pylsp = {
-					pylsp = {
-						plugins = {
-							mccabe = { enabled = false },
-							pycodestyle = { enabled = false },
-							pyflakes = { enabled = false },
-							flake8 = { enabled = true },
+					settings = {
+						pylsp = {
+							plugins = {
+								mccabe = { enabled = false },
+								pycodestyle = { enabled = false },
+								pyflakes = { enabled = false },
+								flake8 = { enabled = true },
+							},
+							configurationSources = { "flake8" },
 						},
-						configurationSources = { "flake8" },
 					},
 				},
-				ts_ls = { completions = { completeFunctionCalls = true } },
+				ts_ls = { settings = { completions = { completeFunctionCalls = true } } },
 			}
 
-			for server, settings in pairs(servers) do
-				local configuration = {
-					settings = settings,
-					capabilities = capabilities,
-				}
-				require("lspconfig")[server].setup(configuration)
+			for server, config in pairs(servers) do
+				vim.lsp.config(server, config)
+				vim.lsp.enable(server)
 			end
 		end,
 	},
