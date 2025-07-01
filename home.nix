@@ -63,6 +63,23 @@
       path = "~/Software"
       depth = 1
     '';
+    ".gitmux.conf".text = ''
+      tmux:
+        styles:
+          clear: "#[fg=#{@thm_fg}]"
+          state: "#[fg=#{@thm_red},bold]"
+          branch: "#[fg=#{@thm_fg},bold]"
+          remote: "#[fg=#{@thm_teal}]"
+          divergence: "#[fg=#{@thm_fg}]"
+          staged: "#[fg=#{@thm_green},bold]"
+          conflict: "#[fg=#{@thm_red},bold]"
+          modified: "#[fg=#{@thm_yellow},bold]"
+          untracked: "#[fg=#{@thm_mauve},bold]"
+          stashed: "#[fg=#{@thm_blue},bold]"
+          clean: "#[fg=#{@thm_rosewater},bold]"
+          insertions: "#[fg=#{@thm_green}]"
+          deletions: "#[fg=#{@thm_red}]"
+    '';
   };
 
   programs.home-manager.enable = true;
@@ -183,18 +200,25 @@
       tmuxPlugins.open
       tmuxPlugins.resurrect
       tmuxPlugins.continuum
-      {
-        plugin = tmuxPlugins.catppuccin;
-        extraConfig = ''
-          set -g @catppuccin_status_modules_left "session application"
-          set -g @catppuccin_status_modules_right "gitmux user host date_time"
-          set -g @catppuccin_status_left_separator "█"
-          set -g @catppuccin_status_right_separator "█"
-          set -g @catppuccin_date_time_text "%Y-%m-%d %I:%M %p"
-        '';
-      }
+      tmuxPlugins.catppuccin
     ];
     extraConfig = ''
+      set -g status-right-length 200
+      set -g status-left-length 200
+
+      set -g @catppuccin_date_time_text " %Y-%m-%d %I:%M %p"
+
+      set -g status-left "#{E:@catppuccin_status_session}"
+      set -ag status-left "#{E:@catppuccin_status_application}"
+
+      set -g @catppuccin_status_left_separator "█"
+      set -g @catppuccin_status_right_separator "█"
+
+      set -gF status-right "#{@catppuccin_status_gitmux}"
+      set -ag status-right "#{E:@catppuccin_status_user}"
+      set -ag status-right "#{E:@catppuccin_status_host}"
+      set -ag status-right "#{E:@catppuccin_status_date_time}"
+
       set -gu default-command
       set -g window-status-current-format ""
       set -g window-status-format ""
