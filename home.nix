@@ -28,6 +28,7 @@
       pkgs.sd
       pkgs.tlrc
       pkgs.tree
+      pkgs.tree-sitter
 
       # terminal
       pkgs.gitmux
