@@ -89,6 +89,8 @@ vim.api.nvim_create_autocmd("FileType", {
 -- [[ EXPAND 2 ]]
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = {
+		"tex",
+		"java",
 		"ledger",
 		"haskell",
 		"cabal",
@@ -255,11 +257,14 @@ require("lazy").setup({
 					filetypes = { "ledger" },
 					root_markers = { ".git" },
 				},
-				jdtls = {},
+				jdtls = {
+					handlers = { ["$/progress"] = function() end },
+				},
 				clangd = {},
 				gopls = {},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
+				kotlin_language_server = {},
 				phpactor = {},
 				taplo = {},
 				lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
@@ -298,7 +303,7 @@ require("lazy").setup({
 						return
 					end
 					return {
-						timeout_ms = 500,
+						timeout_ms = 1000,
 						lsp_format = "fallback",
 					}
 				end,
@@ -313,6 +318,7 @@ require("lazy").setup({
 					json = prettier,
 					lua = { "stylua" },
 					php = { "php_cs_fixer" },
+					kotlin = { "ktfmt" },
 					markdown = prettier,
 					python = { "isort", "black" },
 					sh = { "shfmt" },
