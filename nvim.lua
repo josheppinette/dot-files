@@ -320,7 +320,13 @@ require("lazy").setup({
 					php = { "php_cs_fixer" },
 					kotlin = { "ktfmt" },
 					markdown = prettier,
-					python = { "isort", "black" },
+					python = function(bufnr)
+						if require("conform").get_formatter_info("ruff_format", bufnr).available then
+							return { "ruff_fix", "ruff_format" }
+						else
+							return { "isort", "black" }
+						end
+					end,
 					sh = { "shfmt" },
 					tex = { "tex-fmt" },
 					typescript = prettier,
