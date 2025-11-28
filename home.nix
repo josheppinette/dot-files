@@ -51,7 +51,6 @@
       # build
       pkgs.gnumake
       pkgs.pkg-config
-
     ]
     ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
       pkgs.reattach-to-user-namespace
@@ -81,6 +80,24 @@
           insertions: "#[fg=#{@thm_green}]"
           deletions: "#[fg=#{@thm_red}]"
     '';
+  };
+
+  editorconfig.enable = true;
+  editorconfig.settings = {
+    "*" = {
+      charset = "utf-8";
+      end_of_line = "lf";
+      trim_trailing_whitespace = true;
+      insert_final_newline = true;
+    };
+    "*.{php}" = {
+      indent_style = "space";
+      indent_size = 4;
+    };
+    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,ledger,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml}" = {
+      indent_style = "space";
+      indent_size = 2;
+    };
   };
 
   programs.home-manager.enable = true;

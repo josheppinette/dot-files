@@ -80,35 +80,6 @@ vim.filetype.add({
 	},
 })
 
--- [[ EXPAND 4 ]]
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "php" },
-	command = "setlocal shiftwidth=4 softtabstop=4 expandtab",
-})
-
--- [[ EXPAND 2 ]]
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = {
-		"tex",
-		"java",
-		"ledger",
-		"haskell",
-		"cabal",
-		"phtml",
-		"nix",
-		"json",
-		"typescript",
-		"typescriptreact",
-		"javascript",
-		"javascriptreact",
-		"c",
-		"cpp",
-		"markdown",
-		"toml",
-	},
-	command = "setlocal shiftwidth=2 softtabstop=2 expandtab",
-})
-
 -- [[ User Commands ]]
 vim.api.nvim_create_user_command("ConformDisable", function()
 	vim.b.conform_disable = true
@@ -206,17 +177,16 @@ require("lazy").setup({
 
 					-- Apply mappings
 					map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+					map("gt", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
 					map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 					map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-					map("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
 					map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
 					map(
 						"<leader>ws",
 						require("telescope.builtin").lsp_dynamic_workspace_symbols,
 						"[W]orkspace [S]ymbols"
 					)
-					map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
 					-- When the cursor is still, similar references will be highlighted
 					local client = vim.lsp.get_client_by_id(attach_event.data.client_id)
