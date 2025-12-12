@@ -36,14 +36,17 @@
 
       # languages
       pkgs.llvmPackages.libcxxClang
-      pkgs.python312
+      (pkgs.python312.withPackages (ps: [
+        ps.python-lsp-server
+        ps.python-lsp-ruff
+        ps.pylsp-mypy
+      ]))
 
       # lsp
       pkgs.clang-tools
       pkgs.haskell-language-server
       pkgs.lua-language-server
       pkgs.nixd
-      pkgs.python312Packages.python-lsp-server
       pkgs.taplo
       pkgs.typescript-language-server
       pkgs.phpactor
