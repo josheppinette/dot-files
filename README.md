@@ -53,6 +53,7 @@ Nix releases major version updates every six months and security fixes throughou
     ```sh
     $ nix flake update
     ```
+
 3. Sync
 
     > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful.
@@ -65,8 +66,8 @@ Nix releases major version updates every six months and security fixes throughou
 
     ```sh
     $ nix store diff-closures \
-      /nix/var/nix/profiles/system \
-      /nix/var/nix/profiles/system-<version>-link
+      /nix/var/nix/profiles/system-<version>-link \
+      /nix/var/nix/profiles/system
     ```
 
 5. Commit & Push

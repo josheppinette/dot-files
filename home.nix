@@ -10,54 +10,53 @@
 
   home.username = user;
   home.homeDirectory = home;
-  home.stateVersion = "25.05";
+  home.stateVersion = "25.11";
 
-  home.packages =
-    [
-      # formatters
-      pkgs.nixfmt-rfc-style
+  home.packages = [
+    # formatters
+    pkgs.nixfmt-rfc-style
 
-      # utilities
-      pkgs.curl
-      pkgs.dust
-      pkgs.httpie
-      pkgs.procps
-      pkgs.procs
-      pkgs.rename
-      pkgs.ripgrep
-      pkgs.sd
-      pkgs.tlrc
-      pkgs.tree
-      pkgs.tree-sitter
+    # utilities
+    pkgs.curl
+    pkgs.dust
+    pkgs.httpie
+    pkgs.procps
+    pkgs.procs
+    pkgs.rename
+    pkgs.ripgrep
+    pkgs.sd
+    pkgs.tlrc
+    pkgs.tree
+    pkgs.tree-sitter
 
-      # terminal
-      pkgs.gitmux
-      pkgs.tmux-sessionizer
+    # terminal
+    pkgs.gitmux
+    pkgs.tmux-sessionizer
 
-      # languages
-      pkgs.llvmPackages.libcxxClang
-      (pkgs.python312.withPackages (ps: [
-        ps.python-lsp-server
-        ps.python-lsp-ruff
-        ps.pylsp-mypy
-      ]))
+    # languages
+    pkgs.llvmPackages.libcxxClang
+    (pkgs.python312.withPackages (ps: [
+      ps.python-lsp-server
+      ps.python-lsp-ruff
+      ps.pylsp-mypy
+    ]))
 
-      # lsp
-      pkgs.clang-tools
-      pkgs.haskell-language-server
-      pkgs.lua-language-server
-      pkgs.nixd
-      pkgs.taplo
-      pkgs.typescript-language-server
-      pkgs.phpactor
+    # lsp
+    pkgs.clang-tools
+    pkgs.haskell-language-server
+    pkgs.lua-language-server
+    pkgs.nixd
+    pkgs.taplo
+    pkgs.typescript-language-server
+    pkgs.phpactor
 
-      # build
-      pkgs.gnumake
-      pkgs.pkg-config
-    ]
-    ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
-      pkgs.reattach-to-user-namespace
-    ]);
+    # build
+    pkgs.gnumake
+    pkgs.pkg-config
+  ]
+  ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
+    pkgs.reattach-to-user-namespace
+  ]);
 
   home.file = {
     ".hushlogin".text = "";
@@ -181,12 +180,8 @@
 
   programs.git = {
     enable = true;
-    userEmail = "josheppinette@gmail.com";
-    userName = "Joshua Taylor Eppinette";
-    aliases = {
-      conflicts = "diff --name-only --diff-filter=U --relative";
-    };
-    extraConfig = {
+    settings = {
+      alias.conflicts = "diff --name-only --diff-filter=U --relative";
       branch.sort = "-committerdate";
       commit.verbose = "true";
       diff.algorithm = "histogram";
@@ -207,6 +202,8 @@
       rebase.autostash = "true";
       rebase.updateRefs = "true";
       tag.sort = "version:refname";
+      user.email = "josheppinette@gmail.com";
+      user.name = "Joshua Taylor Eppinette";
     };
   };
 
