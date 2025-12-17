@@ -35,7 +35,7 @@
 
     # languages
     pkgs.llvmPackages.libcxxClang
-    (pkgs.python312.withPackages (ps: [
+    (pkgs.python3.withPackages (ps: [
       ps.python-lsp-server
       ps.python-lsp-ruff
       ps.pylsp-mypy
