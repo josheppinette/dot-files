@@ -399,6 +399,11 @@ require("lazy").setup({
 		config = function() end,
 	},
 
+	{ -- Sort
+		"sQVe/sort.nvim",
+		opts = {},
+	},
+
 	{ -- Highlight, Edit, Navigate
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
