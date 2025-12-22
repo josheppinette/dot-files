@@ -74,7 +74,11 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Filetype Overrides ]]
 
 vim.filetype.add({
+	extension = {
+		rec = "rec",
+	},
 	filename = {
+
 		["user-data"] = "yaml",
 		["meta-data"] = "yaml",
 	},
@@ -387,6 +391,12 @@ require("lazy").setup({
 		"kevinhwang91/nvim-bqf",
 		ft = "qf",
 		opts = {},
+	},
+
+	{ -- GNU Recutils
+		"zaid/vim-rec",
+		ft = "rec",
+		config = function() end,
 	},
 
 	{ -- Highlight, Edit, Navigate
