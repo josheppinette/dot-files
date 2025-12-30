@@ -19,6 +19,8 @@
     # utilities
     pkgs.curl
     pkgs.dust
+    pkgs.entr
+    pkgs.glow
     pkgs.httpie
     pkgs.procps
     pkgs.procs
@@ -103,6 +105,7 @@
   };
 
   programs.home-manager.enable = true;
+  programs.visidata.enable = true;
   programs.eza.enable = true;
   programs.fd.enable = true;
   programs.bat.enable = true;
