@@ -98,7 +98,11 @@
       indent_style = "space";
       indent_size = 4;
     };
-    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,ledger,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml}" = {
+    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml}" = {
+      indent_style = "space";
+      indent_size = 2;
+    };
+    "*.{bean,beancount}" = {
       indent_style = "space";
       indent_size = 2;
     };

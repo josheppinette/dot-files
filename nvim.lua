@@ -76,6 +76,7 @@ vim.opt.rtp:prepend(lazypath)
 vim.filetype.add({
 	extension = {
 		rec = "rec",
+		bean = "beancount",
 	},
 	filename = {
 
@@ -217,10 +218,8 @@ require("lazy").setup({
 			vim.lsp.config("*", { capabilities = capabilities })
 
 			local servers = {
-				hledger_ls = {
-					cmd = { "hledger-language-server" },
-					filetypes = { "ledger" },
-					root_markers = { ".git" },
+				beancount = {
+					init_options = { journal_file = vim.fn.getcwd() .. "/main.bean" },
 				},
 				jdtls = {
 					handlers = { ["$/progress"] = function() end },
@@ -273,7 +272,6 @@ require("lazy").setup({
 					}
 				end,
 				formatters_by_ft = {
-					ledger = { "hledger-fmt" },
 					html = prettier,
 					cabal = { "cabal_fmt" },
 					lisp = { "cljfmt" },
