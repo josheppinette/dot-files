@@ -59,6 +59,16 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+-- Fix Indent
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	callback = function()
+		vim.schedule(function()
+			vim.opt_local.indentkeys:remove("<:>")
+		end)
+	end,
+})
+
 -- [[ Install Plugin Manager ]]
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -225,7 +235,12 @@ require("lazy").setup({
 					handlers = { ["$/progress"] = function() end },
 				},
 				clangd = {},
-				gopls = {},
+				gopls = {
+					on_attach = function(client, bufnr)
+						client.server_capabilities.documentFormattingProvider = false
+						client.server_capabilities.documentRangeFormattingProvider = false
+					end,
+				},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
 				kotlin_language_server = {},
@@ -275,6 +290,7 @@ require("lazy").setup({
 					html = prettier,
 					cabal = { "cabal_fmt" },
 					lisp = { "cljfmt" },
+					go = { "goimports", "gofmt" },
 					java = { "google-java-format" },
 					javascript = prettier,
 					javascriptreact = prettier,

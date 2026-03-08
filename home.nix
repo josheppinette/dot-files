@@ -45,6 +45,7 @@
 
     # lsp
     pkgs.clang-tools
+    pkgs.gopls
     pkgs.haskell-language-server
     pkgs.lua-language-server
     pkgs.nixd
@@ -105,6 +106,18 @@
     "*.{bean,beancount}" = {
       indent_style = "space";
       indent_size = 2;
+    };
+    "*.go" = {
+      indent_style = "tab";
+      indent_size = 4;
+    };
+    "go.{mod,work,work.sum,sum}" = {
+      charset = "unset";
+      end_of_line = "unset";
+      insert_final_newline = "unset";
+      trim_trailing_whitespace = "unset";
+      indent_style = "unset";
+      indent_size = "unset";
     };
   };
 
