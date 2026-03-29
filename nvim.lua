@@ -290,7 +290,7 @@ require("lazy").setup({
 					html = prettier,
 					cabal = { "cabal_fmt" },
 					lisp = { "cljfmt" },
-					go = { "goimports", "gofmt" },
+					go = { "goimports", "gofmt", stop_after_first = true },
 					java = { "google-java-format" },
 					javascript = prettier,
 					javascriptreact = prettier,
