@@ -13,6 +13,12 @@
   home.stateVersion = "25.11";
 
   home.packages = [
+    # ai
+    (pkgs.llm.withPlugins {
+      llm-anthropic = true;
+    })
+    pkgs.files-to-prompt
+
     # formatters
     pkgs.nixfmt-rfc-style
 
