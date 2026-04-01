@@ -14,9 +14,6 @@
 
   home.packages = [
     # ai
-    (pkgs.llm.withPlugins {
-      llm-anthropic = true;
-    })
     pkgs.files-to-prompt
 
     # formatters
@@ -69,6 +66,21 @@
 
   home.file = {
     ".hushlogin".text = "";
+    ".claude/status.sh" = {
+      executable = true;
+      text = ''
+        #!/usr/bin/env bash
+        input=$(cat)
+        model=$(echo "$input" | jq -r '.model.display_name // empty')
+        used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
+        [ -z "$model" ] && exit 0
+        if [ -n "$used" ]; then
+          printf "%s  %s%%" "$model" "$(printf '%.0f' "$used")"
+        else
+          printf "%s" "$model"
+        fi
+      '';
+    };
     ".config/tms/config.toml".text = ''
       [[search_dirs]]
       path = "~/Software"
@@ -124,6 +136,19 @@
       trim_trailing_whitespace = "unset";
       indent_style = "unset";
       indent_size = "unset";
+    };
+  };
+
+  programs.claude-code = {
+    enable = true;
+    settings = {
+      enabledPlugins = {
+        "gopls-lsp@claude-plugins-official" = true;
+      };
+      statusLine = {
+        type = "command";
+        command = "$HOME/.claude/status.sh";
+      };
     };
   };
 

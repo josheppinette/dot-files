@@ -11,6 +11,9 @@
     nix-system-graphics.inputs.nixpkgs.follows = "nixpkgs";
     system-manager.url = "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a";
     system-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    claude-code.url = "github:sadjow/claude-code-nix";
+    claude-code.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -21,10 +24,15 @@
       nix-system-graphics,
       nixpkgs,
       system-manager,
+      claude-code,
       ...
     }@inputs:
     let
-      pkgs = nixpkgs.legacyPackages.${builtins.currentSystem};
+      pkgs = import nixpkgs {
+        config.allowUnfree = true;
+        overlays = [ claude-code.overlays.default ];
+        system = builtins.currentSystem;
+      };
       user = "jteppinette";
       home =
         with pkgs.stdenv;
