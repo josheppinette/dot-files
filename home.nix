@@ -144,6 +144,7 @@
     settings = {
       enabledPlugins = {
         "gopls-lsp@claude-plugins-official" = true;
+        "typescript-lsp@claude-plugins-official" = true;
       };
       statusLine = {
         type = "command";
