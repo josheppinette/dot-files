@@ -59,16 +59,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- Fix Indent
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*",
-	callback = function()
-		vim.schedule(function()
-			vim.opt_local.indentkeys:remove("<:>")
-		end)
-	end,
-})
-
 -- [[ Install Plugin Manager ]]
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -433,7 +423,7 @@ require("lazy").setup({
 			highlight = {
 				enable = true,
 			},
-			indent = { enable = true },
+			indent = { enable = true, disable = { "java", "go" } },
 		},
 		dependencies = {
 			{ "nvim-treesitter/nvim-treesitter-context", opts = { max_lines = 5, multiline_threshold = 1 } },
