@@ -25,6 +25,7 @@
     pkgs.entr
     pkgs.glow
     pkgs.httpie
+    pkgs.poppler-utils
     pkgs.procps
     pkgs.procs
     pkgs.rename
