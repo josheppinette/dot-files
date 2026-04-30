@@ -5,6 +5,13 @@
   ...
 }:
 
+let
+  python = pkgs.python3.withPackages (ps: [
+    ps.python-lsp-server
+    ps.python-lsp-ruff
+    ps.pylsp-mypy
+  ]);
+in
 {
   targets.genericLinux.enable = pkgs.stdenv.isLinux;
 
@@ -41,11 +48,12 @@
 
     # languages
     pkgs.llvmPackages.libcxxClang
-    (pkgs.python3.withPackages (ps: [
-      ps.python-lsp-server
-      ps.python-lsp-ruff
-      ps.pylsp-mypy
-    ]))
+    (pkgs.runCommand "python-env" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
+      mkdir -p $out/bin
+      for f in ${python}/bin/*; do
+        makeWrapper "$f" "$out/bin/$(basename "$f")"
+      done
+    '')
 
     # lsp
     pkgs.clang-tools
@@ -60,6 +68,7 @@
     # build
     pkgs.gnumake
     pkgs.pkg-config
+
   ]
   ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
     pkgs.reattach-to-user-namespace
