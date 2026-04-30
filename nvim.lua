@@ -72,7 +72,6 @@ vim.filetype.add({
 		bean = "beancount",
 	},
 	filename = {
-
 		["user-data"] = "yaml",
 		["meta-data"] = "yaml",
 	},
@@ -164,18 +163,11 @@ require("lazy").setup({
 						vim.keymap.set(mode, keys, func, { buffer = attach_event.buf, desc = "LSP: " .. desc })
 					end
 
-					-- Apply mappings
+					-- Override built-in LSP mappings with Telescope pickers
 					map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-					map("gt", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-					map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+					map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+					map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
 					map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-					map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
-					map(
-						"<leader>ws",
-						require("telescope.builtin").lsp_dynamic_workspace_symbols,
-						"[W]orkspace [S]ymbols"
-					)
 
 					-- When the cursor is still, similar references will be highlighted
 					local client = vim.lsp.get_client_by_id(attach_event.data.client_id)
@@ -219,10 +211,10 @@ require("lazy").setup({
 				},
 				clangd = {},
 				gopls = {
-					on_attach = function(client, bufnr)
-						client.server_capabilities.documentFormattingProvider = false
-						client.server_capabilities.documentRangeFormattingProvider = false
-					end,
+					capabilities = {
+						documentFormattingProvider = false,
+						documentRangeFormattingProvider = false,
+					},
 				},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
