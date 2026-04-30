@@ -16,8 +16,6 @@ vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.smartindent = true
-vim.opt.autoindent = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
@@ -28,11 +26,6 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 5
-vim.opt.foldmethod = "expr"
-vim.opt.foldlevel = 99
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.opt.foldtext = "v:lua.vim.treesitter.foldtext()"
-
 vim.schedule(function()
 	vim.opt.clipboard = "unnamedplus"
 end)
@@ -423,7 +416,7 @@ require("lazy").setup({
 			highlight = {
 				enable = true,
 			},
-			indent = { enable = true, disable = { "java", "go" } },
+			indent = { enable = true },
 		},
 		dependencies = {
 			{ "nvim-treesitter/nvim-treesitter-context", opts = { max_lines = 5, multiline_threshold = 1 } },
