@@ -5,33 +5,11 @@
   ...
 }:
 {
-  nix = {
-    optimise.automatic = true;
-    gc.automatic = true;
+  determinateNix.enable = true;
 
-    linux-builder = {
-      enable = true;
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
-      ephemeral = true;
-      config = {
-        virtualisation = {
-          darwin-builder = {
-            diskSize = 50 * 1024;
-            memorySize = 8 * 1024;
-          };
-          cores = 4;
-        };
-      };
-    };
-
-    settings = {
-      sandbox = true;
-      trusted-users = [ "@admin" ];
-      experimental-features = "nix-command flakes";
-    };
+  determinateNix.customSettings = {
+    trusted-users = ["root" "@admin"];
+    sandbox = true;
   };
 
   users.users.${user}.home = home;

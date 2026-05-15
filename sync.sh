@@ -5,14 +5,14 @@ DIR=$(dirname $SCRIPT)
 
 export HOST=$(hostname)
 
+
 system_darwin() {
 	if ! command -v darwin-rebuild; then
-		sudo --preserve-env=HOST \
+		sudo --preserve-env=HOST,HOME \
 			nix run \
-			--extra-experimental-features nix-command flakes \
-			nix-darwin/nix-darwin-24.11 -- switch --flake "." --impure
+			nix-darwin/nix-darwin-25.11 -- switch --flake "." --impure
 	else
-		sudo --preserve-env=HOST \
+		sudo --preserve-env=HOST,HOME \
 			darwin-rebuild switch --flake "." --impure
 	fi
 }
@@ -23,7 +23,7 @@ system_linux() {
 	ln -sf $DIR/home.nix $HOME/.config/home-manager/home.nix
 
 	if ! command -v home-manager >/dev/null 2>&1; then
-		nix run home-manager/release-24.11 -- switch --impure
+		nix run home-manager/release-25.11 -- switch --impure
 	else
 		home-manager switch --impure
 	fi

@@ -82,3 +82,4 @@ Nix releases major version updates every six months and security fixes throughou
 - [https://github.com/dustinlyons/nixos-config](https://github.com/dustinlyons/nixos-config)
 - [https://nixcademy.com/posts/macos-linux-builder/](https://nixcademy.com/posts/macos-linux-builder/)
 - [https://home-manager-options.extranix.com](https://home-manager-options.extranix.com)
+- [https://docs.determinate.systems/determinate-nix/](https://docs.determinate.systems/determinate-nix/)
