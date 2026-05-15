@@ -2,11 +2,11 @@
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_netrw = 1
 
 -- [[ Options ]]
 
+vim.opt.wildmode = "longest:full,full"
+vim.opt.wildoptions = "pum,fuzzy"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.number = true
@@ -40,6 +40,18 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- [[ LSP Keymaps ]]
+--
+-- Uses Neovim's built-in LSP mappings. See more details with `:h lsp-defaults`.
+--
+--   grn  	rename
+--   grr  	references
+--   gra  	code action
+--   gri  	implementation
+--   gO   	document symbols
+--   K    	hover
+--   CTRL-S	signature help
 
 -- [[ Basic Autocommands ]]
 
@@ -113,95 +125,13 @@ require("lazy").setup({
 		ft = { "markdown" },
 	},
 
-	{ -- Fuzzy Finder
-		"nvim-telescope/telescope.nvim",
-		event = "VimEnter",
-		branch = "0.1.x",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-			{ "nvim-telescope/telescope-ui-select.nvim" },
-			{ "nvim-tree/nvim-web-devicons" },
-		},
-		config = function()
-			require("telescope").setup({
-				extensions = {
-					["ui-select"] = {
-						require("telescope.themes").get_dropdown(),
-					},
-				},
-			})
-
-			pcall(require("telescope").load_extension, "fzf")
-			pcall(require("telescope").load_extension, "ui-select")
-
-			local builtin = require("telescope.builtin")
-			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
-			vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-			vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-			vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch [W]ord" })
-			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch [G]rep" })
-			vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-			vim.keymap.set("n", "<leader>sb", builtin.current_buffer_fuzzy_find, { desc = "[Search [B]buffer" })
-		end,
-	},
-
 	-- LSP
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			{ "j-hui/fidget.nvim", opts = {} },
-			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("LspAttach", { clear = true }),
-				callback = function(attach_event)
-					-- Mappings helper
-					local map = function(keys, func, desc, mode)
-						mode = mode or "n"
-						vim.keymap.set(mode, keys, func, { buffer = attach_event.buf, desc = "LSP: " .. desc })
-					end
-
-					-- Override built-in LSP mappings with Telescope pickers
-					map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-					map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-					map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
-					map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-
-					-- When the cursor is still, similar references will be highlighted
-					local client = vim.lsp.get_client_by_id(attach_event.data.client_id)
-					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-						local group = vim.api.nvim_create_augroup("Highlights", { clear = false })
-						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-							buffer = attach_event.buf,
-							group = group,
-							callback = vim.lsp.buf.document_highlight,
-						})
-						vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-							buffer = attach_event.buf,
-							group = group,
-							callback = vim.lsp.buf.clear_references,
-						})
-						vim.api.nvim_create_autocmd("LspDetach", {
-							group = vim.api.nvim_create_augroup("LspDetach", { clear = true }),
-							callback = function(detach_event)
-								vim.lsp.buf.clear_references()
-								vim.api.nvim_clear_autocmds({ group = "Highlights", buffer = detach_event.buf })
-							end,
-						})
-					end
-				end,
-			})
-
-			local capabilities = vim.tbl_deep_extend(
-				"force",
-				vim.lsp.protocol.make_client_capabilities(),
-				require("cmp_nvim_lsp").default_capabilities()
-			)
-
-			vim.lsp.config("*", { capabilities = capabilities })
-
 			local servers = {
 				beancount = {
 					init_options = { journal_file = vim.fn.getcwd() .. "/main.bean" },
@@ -210,12 +140,7 @@ require("lazy").setup({
 					handlers = { ["$/progress"] = function() end },
 				},
 				clangd = {},
-				gopls = {
-					capabilities = {
-						documentFormattingProvider = false,
-						documentRangeFormattingProvider = false,
-					},
-				},
+				gopls = {},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
 				kotlin_language_server = {},
@@ -291,54 +216,6 @@ require("lazy").setup({
 		end,
 	},
 
-	{ -- Auto complete
-		"hrsh7th/nvim-cmp",
-		event = "InsertEnter",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-path",
-			"onsails/lspkind.nvim",
-		},
-		config = function()
-			local cmp = require("cmp")
-			local lspkind = require("lspkind")
-
-			cmp.setup({
-				completion = { completeopt = "menu,menuone,noinsert" },
-				performance = { max_view_entries = 5 },
-				snippet = {
-					expand = function(args)
-						vim.snippet.expand(args.body)
-					end,
-				},
-				formatting = {
-					format = lspkind.cmp_format(),
-				},
-				mapping = cmp.mapping.preset.insert({
-					-- Select the [n]ext item
-					["<C-n>"] = cmp.mapping.select_next_item(),
-
-					-- Select the [p]revious item
-					["<C-p>"] = cmp.mapping.select_prev_item(),
-
-					-- Scroll the documentation window [b]ack / [f]orward
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-
-					-- Accept ([y]es) the completion.
-					["<C-y>"] = cmp.mapping.confirm({ select = true }),
-
-					-- Manually trigger a completion from nvim-cmp.
-					["<C-Space>"] = cmp.mapping.complete({}),
-				}),
-				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "path" },
-				},
-			})
-		end,
-	},
-
 	{ -- Colorscheme
 		"catppuccin/nvim",
 		priority = 1000,
@@ -346,14 +223,6 @@ require("lazy").setup({
 			vim.cmd.colorscheme("catppuccin-mocha")
 			vim.cmd.hi("Comment gui=none")
 		end,
-	},
-
-	-- Todo Comments
-	{
-		"folke/todo-comments.nvim",
-		event = "VimEnter",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = { signs = false },
 	},
 
 	{ -- Status Line
@@ -373,19 +242,26 @@ require("lazy").setup({
 			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.surround").setup()
 			require("mini.bracketed").setup()
-		end,
-	},
 
-	{ -- Better Quick Fix
-		"kevinhwang91/nvim-bqf",
-		ft = "qf",
-		opts = {},
+			local pick = require("mini.pick")
+			pick.setup()
+
+			vim.keymap.set("n", "<leader>sf", pick.builtin.files, { desc = "[S]earch [F]iles" })
+			vim.keymap.set("n", "<leader>sg", pick.builtin.grep_live, { desc = "[S]earch [G]rep" })
+			vim.keymap.set("n", "<leader>sb", pick.builtin.buffers, { desc = "[S]earch [B]uffers" })
+			vim.keymap.set("n", "<leader>sh", pick.builtin.help, { desc = "[S]earch [H]elp" })
+
+			local extra = require("mini.extra")
+			extra.setup()
+
+			vim.keymap.set("n", "<leader>sd", extra.pickers.diagnostic, { desc = "[S]earch [D]iagnostics" })
+			vim.keymap.set("n", "<leader>sk", extra.pickers.keymaps, { desc = "[S]earch [K]eymaps" })
+		end,
 	},
 
 	{ -- GNU Recutils
 		"zaid/vim-rec",
 		ft = "rec",
-		config = function() end,
 	},
 
 	{ -- Sort
@@ -418,8 +294,5 @@ require("lazy").setup({
 	{ -- Parentheses Inference
 		"gpanders/nvim-parinfer",
 		ft = "lisp",
-		config = function()
-			vim.cmd("ParinferOn")
-		end,
 	},
-}, {})
+})
