@@ -149,6 +149,13 @@ in
     };
   };
 
+  programs.opencode = {
+    enable = true;
+    settings = {
+      autoupdate = false;
+    };
+  };
+
   programs.claude-code = {
     enable = true;
     settings = {

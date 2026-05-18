@@ -8,7 +8,10 @@
   determinateNix.enable = true;
 
   determinateNix.customSettings = {
-    trusted-users = ["root" "@admin"];
+    trusted-users = [
+      "root"
+      "@admin"
+    ];
     sandbox = true;
   };
 
