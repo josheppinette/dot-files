@@ -12,7 +12,7 @@
       "root"
       "@admin"
     ];
-    sandbox = true;
+    sandbox = "relaxed";
   };
 
   users.users.${user}.home = home;

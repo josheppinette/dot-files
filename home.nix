@@ -22,6 +22,8 @@ in
   home.packages = [
     # ai
     pkgs.files-to-prompt
+    pkgs.llm-agents.claude-code
+    pkgs.llm-agents.pi
 
     # formatters
     pkgs.nixfmt-rfc-style
@@ -47,6 +49,7 @@ in
     pkgs.tmux-sessionizer
 
     # languages
+    pkgs.nodejs
     pkgs.llvmPackages.libcxxClang
     (pkgs.runCommand "python-env" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
       mkdir -p $out/bin
@@ -146,27 +149,6 @@ in
       trim_trailing_whitespace = "unset";
       indent_style = "unset";
       indent_size = "unset";
-    };
-  };
-
-  programs.opencode = {
-    enable = true;
-    settings = {
-      autoupdate = false;
-    };
-  };
-
-  programs.claude-code = {
-    enable = true;
-    settings = {
-      enabledPlugins = {
-        "gopls-lsp@claude-plugins-official" = true;
-        "typescript-lsp@claude-plugins-official" = true;
-      };
-      statusLine = {
-        type = "command";
-        command = "$HOME/.claude/status.sh";
-      };
     };
   };
 
@@ -290,6 +272,9 @@ in
       tmuxPlugins.catppuccin
     ];
     extraConfig = ''
+      set -g extended-keys on
+      set -g extended-keys-format csi-u
+
       set -g status-right-length 200
       set -g status-left-length 200
 

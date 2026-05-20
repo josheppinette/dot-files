@@ -18,15 +18,14 @@
     system-manager.url = "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a";
     system-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    claude-code.url = "github:sadjow/claude-code-nix";
-    claude-code.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
     {
-      claude-code,
       determinate,
       home-manager,
+      llm-agents,
       mac-app-util,
       nix-darwin,
       nix-system-graphics,
@@ -37,7 +36,7 @@
     let
       pkgs = import nixpkgs {
         config.allowUnfree = true;
-        overlays = [ claude-code.overlays.default ];
+        overlays = [ llm-agents.overlays.default ];
         system = builtins.currentSystem;
       };
       user = "jteppinette";
