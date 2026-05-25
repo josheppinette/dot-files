@@ -10,6 +10,7 @@ let
     ps.python-lsp-server
     ps.python-lsp-ruff
     ps.pylsp-mypy
+    ps.grip
   ]);
 in
 {
@@ -238,7 +239,6 @@ in
       diff.algorithm = "histogram";
       diff.colorMoved = "true";
       diff.mnemonicPrefix = "true";
-      feature.experimental = "true";
       fetch.all = "true";
       fetch.prune = "true";
       fetch.pruneTags = "true";

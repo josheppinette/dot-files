@@ -35,7 +35,9 @@ end)
 vim.keymap.set("i", "kj", "<Esc>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
-
+vim.keymap.set("n", "<leader>o", function()
+	vim.ui.open(vim.fn.expand("%:p"))
+end, { desc = "[O]pen" })
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
@@ -112,17 +114,6 @@ require("lazy").setup({
 				changedelete = { text = "~" },
 			},
 		},
-	},
-
-	-- Markdown
-	{
-		"iamcco/markdown-preview.nvim",
-		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		build = "cd app && yarn install",
-		init = function()
-			vim.g.mkdp_filetypes = { "markdown" }
-		end,
-		ft = { "markdown" },
 	},
 
 	-- LSP
@@ -277,6 +268,7 @@ require("lazy").setup({
 
 	{ -- Highlight, Edit, Navigate
 		"nvim-treesitter/nvim-treesitter",
+		branch = "master",
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
 		opts = {
