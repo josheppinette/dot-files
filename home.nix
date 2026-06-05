@@ -300,6 +300,9 @@ in
       bind q run-shell "tms kill"
       bind n command-prompt -p "init repo:" "run-shell 'tms init-repo %1'"
 
+      bind % split-window -h -c "#{pane_current_path}"
+      bind '"' split-window -v -c "#{pane_current_path}"
+
       bind h select-pane -L
       bind j select-pane -D
       bind k select-pane -U
