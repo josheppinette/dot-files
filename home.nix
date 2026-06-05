@@ -213,7 +213,7 @@ in
     };
     defaultKeymap = "emacs";
     initContent = ''
-      PROMPT='%F{blue}%~%f $ '
+      PROMPT='%F{blue}%(5~|%-1~/…/%3~|%~)%f $ '
 
       function git-open() { (
           set -e
