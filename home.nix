@@ -65,6 +65,7 @@ in
     pkgs.haskell-language-server
     pkgs.lua-language-server
     pkgs.nixd
+    pkgs.ocamlPackages.ocaml-lsp
     pkgs.taplo
     pkgs.typescript-language-server
     pkgs.phpactor
@@ -131,11 +132,19 @@ in
       indent_style = "space";
       indent_size = 4;
     };
-    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml}" = {
+    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml,ml,mli,opam}" = {
       indent_style = "space";
       indent_size = 2;
     };
+    "{dune,dune-project,dune-workspace}" = {
+      indent_style = "space";
+      indent_size = 1;
+    };
     "*.{bean,beancount}" = {
+      indent_style = "space";
+      indent_size = 2;
+    };
+    "*.{hs,lhs}" = {
       indent_style = "space";
       indent_size = 2;
     };

@@ -190,6 +190,8 @@ require("lazy").setup({
 					php = { "php_cs_fixer" },
 					kotlin = { "ktfmt" },
 					markdown = prettier,
+					ocaml = { "ocamlformat" },
+					dune = { "format-dune-file" },
 					python = function(bufnr)
 						if require("conform").get_formatter_info("ruff_format", bufnr).available then
 							return { "ruff_fix", "ruff_format" }
