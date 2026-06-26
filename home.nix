@@ -66,6 +66,7 @@ in
     pkgs.lua-language-server
     pkgs.nixd
     pkgs.ocamlPackages.ocaml-lsp
+    pkgs.rust-analyzer
     pkgs.taplo
     pkgs.typescript-language-server
     pkgs.phpactor
@@ -147,6 +148,10 @@ in
     "*.{hs,lhs}" = {
       indent_style = "space";
       indent_size = 2;
+    };
+    "*.rs" = {
+      indent_style = "space";
+      indent_size = 4;
     };
     "*.go" = {
       indent_style = "tab";

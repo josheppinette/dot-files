@@ -134,6 +134,7 @@ require("lazy").setup({
 				gopls = {},
 				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
 				nixd = {},
+				rust_analyzer = {},
 				kotlin_language_server = {},
 				phpactor = {},
 				taplo = {},
@@ -199,6 +200,7 @@ require("lazy").setup({
 							return { "isort", "black" }
 						end
 					end,
+					rust = { "rustfmt" },
 					sh = { "shfmt" },
 					tex = { "tex-fmt" },
 					typescript = prettier,
