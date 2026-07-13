@@ -201,6 +201,7 @@ require("lazy").setup({
 						end
 					end,
 					rust = { "rustfmt" },
+					scala = { "scalafmt" },
 					sh = { "shfmt" },
 					tex = { "tex-fmt" },
 					typescript = prettier,
