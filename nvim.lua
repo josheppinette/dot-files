@@ -137,7 +137,13 @@ require("lazy").setup({
 				rust_analyzer = {},
 				kotlin_language_server = {},
 				phpactor = {},
-				taplo = {},
+				taplo = {
+					settings = {
+						evenBetterToml = {
+							schema = { enabled = false },
+						},
+					},
+				},
 				lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
 				pylsp = {
 					settings = {
