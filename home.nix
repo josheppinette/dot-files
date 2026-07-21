@@ -40,6 +40,7 @@ in
     pkgs.procs
     pkgs.rename
     pkgs.ripgrep
+    pkgs.rsync
     pkgs.sd
     pkgs.tlrc
     pkgs.tree
@@ -133,10 +134,11 @@ in
       indent_style = "space";
       indent_size = 4;
     };
-    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml,ml,mli,opam,scala,sbt,sc}" = {
-      indent_style = "space";
-      indent_size = 2;
-    };
+    "*.{c,h,cpp,hpp,cxx,hxx,tex,java,cabal,phtml,nix,json,ts,tsx,js,jsx,md,toml,yaml,ml,mli,opam,scala,sbt,sc}" =
+      {
+        indent_style = "space";
+        indent_size = 2;
+      };
     "{dune,dune-project,dune-workspace}" = {
       indent_style = "space";
       indent_size = 1;
