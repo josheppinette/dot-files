@@ -15,6 +15,8 @@ let
 in
 {
   targets.genericLinux.enable = pkgs.stdenv.isLinux;
+  targets.darwin.copyApps.enable = false;
+  targets.darwin.linkApps.enable = pkgs.stdenv.isDarwin;
 
   home.username = user;
   home.homeDirectory = home;
