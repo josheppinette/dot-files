@@ -37,6 +37,7 @@ in
     pkgs.entr
     pkgs.glow
     pkgs.httpie
+    pkgs.imagemagick
     pkgs.poppler-utils
     pkgs.procps
     pkgs.procs
