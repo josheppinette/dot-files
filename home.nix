@@ -25,7 +25,6 @@ in
   home.packages = [
     # ai
     pkgs.files-to-prompt
-    pkgs.llm-agents.claude-code
     pkgs.llm-agents.pi
 
     # formatters
@@ -327,5 +326,34 @@ in
       bind k select-pane -U
       bind l select-pane -R
     '';
+  };
+
+  programs.claude-code = {
+    enable = true;
+    package = pkgs.llm-agents.claude-code;
+
+    settings = {
+      model = "opus";
+      effortLevel = "medium";
+      statusLine = {
+        type = "command";
+        command = "$HOME/.claude/status.sh";
+      };
+      enabledPlugins = {
+        "gopls-lsp@claude-plugins-official" = true;
+        "typescript-lsp@claude-plugins-official" = true;
+        "lua-lsp@claude-plugins-official" = true;
+        "clangd-lsp@claude-plugins-official" = true;
+        "rust-analyzer-lsp@claude-plugins-official" = true;
+      };
+      autoMemoryEnabled = false;
+      permissions = {
+        allow = [
+          "Bash(git status:*)"
+          "Bash(git diff:*)"
+          "Bash(git log:*)"
+        ];
+      };
+    };
   };
 }
