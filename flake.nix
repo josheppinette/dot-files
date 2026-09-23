@@ -36,7 +36,11 @@
     let
       pkgs = import nixpkgs {
         config.allowUnfree = true;
-        overlays = [ llm-agents.overlays.default ];
+        overlays = [
+          (final: prev: {
+            llm-agents = llm-agents.packages.${prev.stdenv.hostPlatform.system};
+          })
+        ];
         system = builtins.currentSystem;
       };
       user = "jteppinette";
