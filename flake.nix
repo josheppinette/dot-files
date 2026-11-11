@@ -7,7 +7,11 @@
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    mac-app-util.url = "github:hraban/mac-app-util/4747968574ea58512c5385466400b2364c85d2d0";
+    # TODO: Remove nixpkgs-unstable and mac-app-util follow once
+    # our nixpkgs has SBCL >= 2.6.6.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    mac-app-util.url = "github:hraban/mac-app-util/039f33deef21782d4db97087f426504951239887";
+    mac-app-util.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     nix-darwin.url = "github:LnL7/nix-darwin/nix-darwin-25.11";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
