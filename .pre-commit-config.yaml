@@ -47,8 +47,8 @@ repos:
       - id: shfmt
         name: shfmt
         language: system
-        entry: shfmt --check
-        types_or: [sh]
+        entry: shfmt -d
+        types_or: [shell]
 
       - id: nix flake check
         name: nix flake check
