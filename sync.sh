@@ -5,39 +5,30 @@ DIR=$(dirname $SCRIPT)
 
 export HOST=$(hostname)
 
-
 system_darwin() {
 	if ! command -v darwin-rebuild; then
 		sudo --preserve-env=HOST,HOME \
 			nix run \
-			nix-darwin/nix-darwin-25.11 -- switch --flake "." --impure
+			nix-darwin/nix-darwin-25.11 -- switch --flake "$DIR" --impure
 	else
 		sudo --preserve-env=HOST,HOME \
-			darwin-rebuild switch --flake "." --impure
+			darwin-rebuild switch --flake "$DIR" --impure
 	fi
 }
 
 system_linux() {
-	mkdir -p $HOME/.config/home-manager >/dev/null 2>&1
-	ln -sf $DIR/flake.nix $HOME/.config/home-manager/flake.nix
-	ln -sf $DIR/home.nix $HOME/.config/home-manager/home.nix
-
 	if ! command -v home-manager >/dev/null 2>&1; then
-		nix run home-manager/release-25.11 -- switch --impure
+		nix run home-manager/release-25.11 -- switch --flake "$DIR" --impure
 	else
-		home-manager switch --impure
+		home-manager switch --flake "$DIR" --impure
 	fi
 
-	if [ -f /etc/os-release ]; then
-		. /etc/os-release
+	. /etc/os-release
 
-		if [ "$ID" = "nixos" ]; then
-			continue
-		fi
-
+	if [ "$ID" != "nixos" ]; then
 		sudo $(which nix) \
 			run "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a" -- \
-			switch --flake "." --nix-option pure-eval false
+			switch --flake "$DIR" --nix-option pure-eval false
 	fi
 }
 

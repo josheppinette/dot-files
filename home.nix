@@ -81,6 +81,9 @@ in
   ]
   ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
     pkgs.reattach-to-user-namespace
+  ])
+  ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [
+    pkgs.xclip
   ]);
 
   home.file = {
@@ -193,6 +196,21 @@ in
     vimdiffAlias = true;
   };
 
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    includes = [ "~/.ssh/config.local" ];
+    matchBlocks."*" = {
+      serverAliveInterval = 60;
+      serverAliveCountMax = 30;
+      identityAgent =
+        if pkgs.stdenv.isDarwin then
+          ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+        else
+          "~/.1password/agent.sock";
+    };
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
@@ -239,7 +257,7 @@ in
           remote=''${1:-origin}
           url=$(git config remote.$remote.url | sed "s/git@\(.*\):\(.*\).git/https:\/\/\1\/\2/")
           echo "git: opening $remote $url"
-          open $url
+          ${if pkgs.stdenv.isDarwin then "open" else "xdg-open"} $url
       ); }
 
       if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then

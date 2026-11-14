@@ -47,7 +47,17 @@
         ];
         system = builtins.currentSystem;
       };
-      user = "jteppinette";
+      user =
+        let
+          sudoUser = builtins.getEnv "SUDO_USER";
+          envUser = builtins.getEnv "USER";
+        in
+        if sudoUser != "" then
+          sudoUser
+        else if envUser != "" then
+          envUser
+        else
+          throw "could not determine user: run with --impure";
       home =
         with pkgs.stdenv;
         if isLinux then

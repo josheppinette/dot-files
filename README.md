@@ -2,7 +2,7 @@ _This repo contains the Nix configuration for my MacOS and Linux machines. Follo
 
 # Getting Started
 
-1. Add ssh keys
+1. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/)
 
 2. [Install Nix](https://zero-to-nix.com/start/install/)
 
@@ -12,7 +12,12 @@ _This repo contains the Nix configuration for my MacOS and Linux machines. Follo
    $ ./sync.sh
    ```
 
-4. Set zsh as default shell
+4. Set zsh as default shell in a new terminal
+
+   ```sh
+   $ command -v zsh | sudo tee -a /etc/shells
+   $ chsh -s "$(command -v zsh)"
+   ```
 
 # Development
 
