@@ -102,6 +102,7 @@
         packages = [
           pkgs.nixfmt-rfc-style
           pkgs.pre-commit
+          pkgs.prettier
           pkgs.shfmt
           pkgs.stylua
         ];

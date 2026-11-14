@@ -44,6 +44,12 @@ repos:
         entry: stylua --check
         types_or: [lua]
 
+      - id: prettier
+        name: prettier
+        language: system
+        entry: prettier --check
+        types_or: [markdown]
+
       - id: shfmt
         name: shfmt
         language: system

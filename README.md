@@ -40,46 +40,45 @@ Nix releases major version updates every six months and security fixes throughou
 
 1. Note system version
 
-    > We will use this system version to run a report at the end of the upgrade process.
+   > We will use this system version to run a report at the end of the upgrade process.
 
-    ```sh
-    $ readlink /nix/var/nix/profiles/system
-    ```
+   ```sh
+   $ readlink /nix/var/nix/profiles/system
+   ```
 
-1. Update configuration
+2. Update configuration
 
-    a. Update flake inputs
-    b. Update nix-darwin configuration and state version given latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
-    c. Update home-manager configuration and state version given latest [changes](https://nix-community.github.io/home-manager/release-notes.xhtml)
+   a. Update flake inputs
+   b. Update nix-darwin configuration and state version given latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
+   c. Update home-manager configuration and state version given latest [changes](https://nix-community.github.io/home-manager/release-notes.xhtml)
 
+3. Run flake update
 
-2. Run flake update
+   ```sh
+   $ nix flake update
+   ```
 
-    ```sh
-    $ nix flake update
-    ```
+4. Sync
 
-3. Sync
+   > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful.
 
-    > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful.
+   ```sh
+   ./sync.sh
+   ```
 
-    ```sh
-    ./sync.sh
-    ```
+5. Report changes
 
-4. Report changes
+   ```sh
+   $ nix store diff-closures \
+     /nix/var/nix/profiles/system-<version>-link \
+     /nix/var/nix/profiles/system
+   ```
 
-    ```sh
-    $ nix store diff-closures \
-      /nix/var/nix/profiles/system-<version>-link \
-      /nix/var/nix/profiles/system
-    ```
+6. Commit & Push
 
-5. Commit & Push
-
-    ```
-    $ git commit -am "<msg>" && git push
-    ```
+   ```
+   $ git commit -am "<msg>" && git push
+   ```
 
 # References
 
