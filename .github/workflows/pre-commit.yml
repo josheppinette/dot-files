@@ -4,13 +4,34 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pre-commit-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-    - uses: actions/checkout@v2
-    - uses: DeterminateSystems/nix-installer-action@v3
-    - uses: DeterminateSystems/magic-nix-cache-action@main
-    - uses: nicknovitski/nix-develop@v1
-    - run: pre-commit run --all
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+        with:
+          summarize: false
+
+      - name: Setup direnv
+        run: |
+          nix profile add --inputs-from . nixpkgs#direnv
+          direnv allow
+          direnv exec . sh -c 'echo $PATH' > "$GITHUB_PATH"
+          direnv export gha >> "$GITHUB_ENV"
+
+      - name: Pre-commit
+        run: pre-commit run --all-files --show-diff-on-failure
