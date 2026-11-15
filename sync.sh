@@ -5,6 +5,8 @@ DIR=$(dirname $SCRIPT)
 
 export HOST=$(hostname)
 
+NIX=$(command -v nix)
+
 system_darwin() {
 	if ! command -v darwin-rebuild; then
 		sudo --preserve-env=HOST,HOME \
@@ -26,7 +28,7 @@ system_linux() {
 	. /etc/os-release
 
 	if [ "$ID" != "nixos" ]; then
-		sudo $(which nix) \
+		sudo "$NIX" \
 			run "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a" -- \
 			switch --flake "$DIR" --nix-option pure-eval false
 	fi
@@ -37,3 +39,6 @@ if [ "$(uname)" = "Darwin" ]; then
 else
 	system_linux
 fi
+
+"$NIX" run --inputs-from "$DIR" nixpkgs#nh -- \
+	clean all --keep-since 14d --keep 3
