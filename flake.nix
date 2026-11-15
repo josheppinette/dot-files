@@ -17,6 +17,9 @@
     system-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    vim-rec.url = "github:zaid/vim-rec";
+    vim-rec.flake = false;
   };
 
   outputs =
@@ -28,6 +31,7 @@
       nix-system-graphics,
       nixpkgs,
       system-manager,
+      vim-rec,
       ...
     }@inputs:
     let
@@ -36,6 +40,13 @@
         overlays = [
           (final: prev: {
             llm-agents = llm-agents.packages.${prev.stdenv.hostPlatform.system};
+            vimPlugins = prev.vimPlugins // {
+              vim-rec = prev.vimUtils.buildVimPlugin {
+                pname = "vim-rec";
+                version = vim-rec.shortRev;
+                src = vim-rec;
+              };
+            };
           })
         ];
         system = builtins.currentSystem;

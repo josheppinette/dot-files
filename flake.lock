@@ -395,7 +395,8 @@
         "nix-darwin": "nix-darwin",
         "nix-system-graphics": "nix-system-graphics",
         "nixpkgs": "nixpkgs_4",
-        "system-manager": "system-manager"
+        "system-manager": "system-manager",
+        "vim-rec": "vim-rec"
       }
     },
     "system-manager": {
@@ -452,6 +453,22 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "vim-rec": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1667240903,
+        "narHash": "sha256-FE9cDq3tAUXPZ+R7XVhrQEzG8QRbCK7JSuYUPusILak=",
+        "owner": "zaid",
+        "repo": "vim-rec",
+        "rev": "fea812c2d68bb989df74950342231c7ed3355bb7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zaid",
+        "repo": "vim-rec",
         "type": "github"
       }
     }

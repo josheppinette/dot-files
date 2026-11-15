@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 -- [[ Globals ]]
 
 vim.g.mapleader = " "
@@ -34,7 +36,9 @@ end)
 
 vim.keymap.set("i", "kj", "<Esc>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+vim.keymap.set("n", "<leader>q", function()
+	vim.diagnostic.setloclist()
+end, { desc = "Open diagnostic [Q]uickfix list" })
 vim.keymap.set("n", "<leader>o", function()
 	vim.ui.open(vim.fn.expand("%:p"))
 end, { desc = "[O]pen" })
@@ -66,18 +70,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- [[ Install Plugin Manager ]]
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		error("Error cloning lazy.nvim:\n" .. out)
-	end
-end
-
-vim.opt.rtp:prepend(lazypath)
-
 -- [[ Filetype Overrides ]]
 
 vim.filetype.add({
@@ -99,205 +91,160 @@ vim.api.nvim_create_user_command("ConformEnable", function()
 	vim.b.conform_disable = false
 end, { desc = "Re-enable autoformat-on-save" })
 
--- [[ Configure & Install Plugins ]]
+-- [[ Plugins ]]
+--
+-- Plugins are installed by Nix (see `programs.neovim.plugins` in home.nix).
 
-require("lazy").setup({
+-- Colorscheme
+vim.cmd.colorscheme("catppuccin-mocha")
+vim.cmd.hi("Comment gui=none")
 
-	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
-		"lewis6991/gitsigns.nvim",
-		opts = {
-			signs = {
-				add = { text = "+" },
-				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
+-- Git signs in the gutter
+require("gitsigns").setup({
+	signs = {
+		add = { text = "+" },
+		change = { text = "~" },
+		delete = { text = "_" },
+		topdelete = { text = "‾" },
+		changedelete = { text = "~" },
+	},
+})
+
+-- Status line
+require("lualine").setup({
+	sections = {
+		lualine_b = { "diff", "diagnostics" },
+		lualine_x = { "filetype" },
+	},
+})
+
+-- LSP
+require("fidget").setup({})
+
+local servers = {
+	beancount = {
+		init_options = { journal_file = vim.fn.getcwd() .. "/main.bean" },
+	},
+	jdtls = {
+		handlers = { ["$/progress"] = function() end },
+	},
+	clangd = {},
+	gopls = {},
+	hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
+	nixd = {},
+	rust_analyzer = {},
+	kotlin_language_server = {},
+	phpactor = {},
+	taplo = {
+		settings = {
+			evenBetterToml = {
+				schema = { enabled = false },
 			},
 		},
 	},
-
-	-- LSP
-	{
-		"neovim/nvim-lspconfig",
-		dependencies = {
-			{ "j-hui/fidget.nvim", opts = {} },
+	lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
+	pylsp = {
+		settings = {
+			pylsp = {
+				plugins = {
+					mccabe = { enabled = false },
+					pycodestyle = { enabled = false },
+					pyflakes = { enabled = false },
+					ruff = { enabled = true },
+					mypy = { enabled = true },
+				},
+			},
 		},
-		config = function()
-			local servers = {
-				beancount = {
-					init_options = { journal_file = vim.fn.getcwd() .. "/main.bean" },
-				},
-				jdtls = {
-					handlers = { ["$/progress"] = function() end },
-				},
-				clangd = {},
-				gopls = {},
-				hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
-				nixd = {},
-				rust_analyzer = {},
-				kotlin_language_server = {},
-				phpactor = {},
-				taplo = {
-					settings = {
-						evenBetterToml = {
-							schema = { enabled = false },
-						},
-					},
-				},
-				lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
-				pylsp = {
-					settings = {
-						pylsp = {
-							plugins = {
-								mccabe = { enabled = false },
-								pycodestyle = { enabled = false },
-								pyflakes = { enabled = false },
-								ruff = { enabled = true },
-								mypy = { enabled = true },
-							},
-						},
-					},
-				},
-				ts_ls = { settings = { completions = { completeFunctionCalls = true } } },
-			}
+	},
+	ts_ls = { settings = { completions = { completeFunctionCalls = true } } },
+}
 
-			for server, config in pairs(servers) do
-				vim.lsp.config(server, config)
-				vim.lsp.enable(server)
+for server, config in pairs(servers) do
+	vim.lsp.config(server, config)
+	vim.lsp.enable(server)
+end
+
+-- Auto format
+local prettier = { "prettierd", "prettier", stop_after_first = true }
+require("conform").setup({
+	format_on_save = function(n)
+		if vim.b[n].conform_disable then
+			return
+		end
+		return {
+			timeout_ms = 1000,
+			lsp_format = "fallback",
+		}
+	end,
+	formatters_by_ft = {
+		html = prettier,
+		cabal = { "cabal_fmt" },
+		lisp = { "cljfmt" },
+		go = { "goimports", "gofmt", stop_after_first = true },
+		java = { "google-java-format" },
+		javascript = prettier,
+		javascriptreact = prettier,
+		json = prettier,
+		lua = { "stylua" },
+		php = { "php_cs_fixer" },
+		kotlin = { "ktfmt" },
+		markdown = prettier,
+		ocaml = { "ocamlformat" },
+		dune = { "format-dune-file" },
+		python = function(bufnr)
+			if require("conform").get_formatter_info("ruff_format", bufnr).available then
+				return { "ruff_fix", "ruff_format" }
+			else
+				return { "isort", "black" }
 			end
 		end,
+		rust = { "rustfmt" },
+		scala = { "scalafmt" },
+		sh = { "shfmt" },
+		tex = { "tex-fmt" },
+		typescript = prettier,
+		typescriptreact = prettier,
+		yaml = prettier,
 	},
-
-	{ -- Auto format
-		"stevearc/conform.nvim",
-		event = { "BufWritePre" },
-		cmd = { "ConformInfo" },
-		config = function()
-			local prettier = { "prettierd", "prettier", stop_after_first = true }
-			require("conform").setup({
-				format_on_save = function(n)
-					if vim.b[n].conform_disable then
-						return
-					end
-					return {
-						timeout_ms = 1000,
-						lsp_format = "fallback",
-					}
-				end,
-				formatters_by_ft = {
-					html = prettier,
-					cabal = { "cabal_fmt" },
-					lisp = { "cljfmt" },
-					go = { "goimports", "gofmt", stop_after_first = true },
-					java = { "google-java-format" },
-					javascript = prettier,
-					javascriptreact = prettier,
-					json = prettier,
-					lua = { "stylua" },
-					php = { "php_cs_fixer" },
-					kotlin = { "ktfmt" },
-					markdown = prettier,
-					ocaml = { "ocamlformat" },
-					dune = { "format-dune-file" },
-					python = function(bufnr)
-						if require("conform").get_formatter_info("ruff_format", bufnr).available then
-							return { "ruff_fix", "ruff_format" }
-						else
-							return { "isort", "black" }
-						end
-					end,
-					rust = { "rustfmt" },
-					scala = { "scalafmt" },
-					sh = { "shfmt" },
-					tex = { "tex-fmt" },
-					typescript = prettier,
-					typescriptreact = prettier,
-					yaml = prettier,
-				},
-			})
-		end,
-	},
-
-	{ -- Colorscheme
-		"catppuccin/nvim",
-		priority = 1000,
-		init = function()
-			vim.cmd.colorscheme("catppuccin-mocha")
-			vim.cmd.hi("Comment gui=none")
-		end,
-	},
-
-	{ -- Status Line
-		"nvim-lualine/lualine.nvim",
-		opts = {
-			sections = {
-				lualine_b = { "diff", "diagnostics" },
-				lualine_x = { "filetype" },
-			},
-		},
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-	},
-
-	{ -- Mini Plugins
-		"echasnovski/mini.nvim",
-		config = function()
-			require("mini.ai").setup({ n_lines = 500 })
-			require("mini.surround").setup()
-			require("mini.bracketed").setup()
-
-			local pick = require("mini.pick")
-			pick.setup()
-
-			vim.keymap.set("n", "<leader>sf", pick.builtin.files, { desc = "[S]earch [F]iles" })
-			vim.keymap.set("n", "<leader>sg", pick.builtin.grep_live, { desc = "[S]earch [G]rep" })
-			vim.keymap.set("n", "<leader>sb", pick.builtin.buffers, { desc = "[S]earch [B]uffers" })
-			vim.keymap.set("n", "<leader>sh", pick.builtin.help, { desc = "[S]earch [H]elp" })
-
-			local extra = require("mini.extra")
-			extra.setup()
-
-			vim.keymap.set("n", "<leader>sd", extra.pickers.diagnostic, { desc = "[S]earch [D]iagnostics" })
-			vim.keymap.set("n", "<leader>sk", extra.pickers.keymaps, { desc = "[S]earch [K]eymaps" })
-		end,
-	},
-
-	{ -- GNU Recutils
-		"zaid/vim-rec",
-		ft = "rec",
-	},
-
-	{ -- Sort
-		"sQVe/sort.nvim",
-		opts = {
-			mappings = {
-				operator = "gs",
-				textobject = false,
-				motion = false,
-			},
-		},
-	},
-
-	{ -- Highlight, Edit, Navigate
-		"nvim-treesitter/nvim-treesitter",
-		branch = "master",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
-		opts = {
-			auto_install = true,
-			highlight = {
-				enable = true,
-			},
-			indent = { enable = true },
-		},
-		dependencies = {
-			{ "nvim-treesitter/nvim-treesitter-context", opts = { max_lines = 5, multiline_threshold = 1 } },
-		},
-	},
-
-	{ -- Parentheses Inference
-		"gpanders/nvim-parinfer",
-		ft = "lisp",
-	},
-}, {
-	lockfile = vim.g.lazy_lockfile,
 })
+
+-- Mini
+require("mini.ai").setup({ n_lines = 500 })
+require("mini.surround").setup()
+require("mini.bracketed").setup()
+
+local pick = require("mini.pick")
+pick.setup()
+
+vim.keymap.set("n", "<leader>sf", pick.builtin.files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<leader>sg", pick.builtin.grep_live, { desc = "[S]earch [G]rep" })
+vim.keymap.set("n", "<leader>sb", pick.builtin.buffers, { desc = "[S]earch [B]uffers" })
+vim.keymap.set("n", "<leader>sh", pick.builtin.help, { desc = "[S]earch [H]elp" })
+
+local extra = require("mini.extra")
+extra.setup()
+
+vim.keymap.set("n", "<leader>sd", extra.pickers.diagnostic, { desc = "[S]earch [D]iagnostics" })
+vim.keymap.set("n", "<leader>sk", extra.pickers.keymaps, { desc = "[S]earch [K]eymaps" })
+
+-- Sort
+require("sort").setup({
+	mappings = {
+		operator = "gs",
+		textobject = false,
+		motion = false,
+	},
+})
+
+-- Treesitter
+vim.api.nvim_create_autocmd("FileType", {
+	desc = "Enable treesitter highlighting and indentation",
+	group = vim.api.nvim_create_augroup("treesitter-start", { clear = true }),
+	callback = function(args)
+		if pcall(vim.treesitter.start, args.buf) then
+			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
+	end,
+})
+
+require("treesitter-context").setup({ max_lines = 5, multiline_threshold = 1 })
