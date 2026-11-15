@@ -21,7 +21,11 @@ _This repo contains the Nix configuration for my MacOS and Linux machines. Follo
 
 # Organization
 
-Each machine is declared in `flake.nix` by its hostname, with any host-specific configuration in `hosts/<hostname>/`. Shared configuration lives at the top level.
+- `flake.nix`: declares each machine by hostname
+- `hosts/<hostname>/`: machine-specific configuration
+- `modules/home/`: Home Manager configuration shared by all machines, one file per topic
+
+Handle macOS and Linux differences inline with `pkgs.stdenv.isDarwin`. Avoid custom options and frameworks like flake-parts until more machines need them.
 
 # Development
 
@@ -71,8 +75,18 @@ Nix releases major version updates every six months and security fixes throughou
 
 # References
 
-- [https://github.com/mrkuz/macos-config](https://github.com/mrkuz/macos-config)
-- [https://github.com/dustinlyons/nixos-config](https://github.com/dustinlyons/nixos-config)
-- [https://nixcademy.com/posts/macos-linux-builder/](https://nixcademy.com/posts/macos-linux-builder/)
-- [https://home-manager-options.extranix.com](https://home-manager-options.extranix.com)
-- [https://docs.determinate.systems/determinate-nix/](https://docs.determinate.systems/determinate-nix/)
+**Documentation**
+
+- [Home Manager options](https://home-manager-options.extranix.com)
+- [nix-darwin options](https://nix-darwin.github.io/nix-darwin/manual/)
+- [system-manager](https://github.com/numtide/system-manager)
+- [nh](https://github.com/nix-community/nh)
+- [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
+- [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world)
+
+**Examples Configurations**
+
+- [Misterio77/nix-starter-configs](https://github.com/Misterio77/nix-starter-configs)
+- [ryan4yin/nix-config](https://github.com/ryan4yin/nix-config)
+- [dustinlyons/nixos-config](https://github.com/dustinlyons/nixos-config)
+- [mitchellh/nixos-config](https://github.com/mitchellh/nixos-config)

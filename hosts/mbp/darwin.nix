@@ -16,6 +16,6 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.jteppinette = import ../../home.nix;
+    users.jteppinette = import ../../modules/home;
   };
 }
