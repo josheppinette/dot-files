@@ -10,8 +10,8 @@ NIX=$(command -v nix)
 system_darwin() {
 	if ! command -v darwin-rebuild; then
 		sudo --preserve-env=HOST,HOME \
-			nix run \
-			nix-darwin/nix-darwin-26.05 -- switch --flake "$DIR" --impure
+			"$NIX" run --inputs-from "$DIR" nix-darwin -- \
+			switch --flake "$DIR" --impure
 	else
 		sudo --preserve-env=HOST,HOME \
 			darwin-rebuild switch --flake "$DIR" --impure
@@ -20,7 +20,8 @@ system_darwin() {
 
 system_linux() {
 	if ! command -v home-manager >/dev/null 2>&1; then
-		nix run home-manager/release-26.05 -- switch --flake "$DIR" --impure
+		"$NIX" run --inputs-from "$DIR" home-manager -- \
+			switch --flake "$DIR" --impure
 	else
 		home-manager switch --flake "$DIR" --impure
 	fi
@@ -29,7 +30,7 @@ system_linux() {
 
 	if [ "$ID" != "nixos" ]; then
 		sudo "$NIX" \
-			run "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a" -- \
+			run --inputs-from "$DIR" system-manager -- \
 			switch --flake "$DIR" --nix-option pure-eval false
 	fi
 }

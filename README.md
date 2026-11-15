@@ -34,7 +34,7 @@ $ pre-commit install
 
 After any changes have been made, run `./sync.sh` to update the system.
 
-**Software Updates**
+# Updating
 
 Nix releases major version updates every six months and security fixes throughout that period. We should maintain updated software by running the following steps on all machines at a regular cadence.
 
@@ -48,9 +48,10 @@ Nix releases major version updates every six months and security fixes throughou
 
 2. Update configuration
 
-   a. Update flake inputs
-   b. Update nix-darwin configuration and state version given latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
-   c. Update home-manager configuration and state version given latest [changes](https://nix-community.github.io/home-manager/release-notes.xhtml)
+   a. Update the release branches in `flake.nix` (`nixpkgs`, `home-manager`, `nix-darwin`)
+   b. Update packages given the latest [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes) (removed and renamed packages)
+   c. Update nix-darwin configuration and `system.stateVersion` given the latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
+   d. Update home-manager configuration and `home.stateVersion` given the latest [release notes](https://nix-community.github.io/home-manager/release-notes/release-notes.html)
 
 3. Run flake update
 
@@ -77,7 +78,7 @@ Nix releases major version updates every six months and security fixes throughou
 6. Commit & Push
 
    ```
-   $ git commit -am "<msg>" && git push
+   $ git add -A && git commit -m "<msg>" && git push
    ```
 
 # References
