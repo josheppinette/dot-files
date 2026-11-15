@@ -19,6 +19,10 @@ _This repo contains the Nix configuration for my MacOS and Linux machines. Follo
    $ chsh -s "$(command -v zsh)"
    ```
 
+# Organization
+
+Each machine is declared in `flake.nix` by its hostname, with any host-specific configuration in `hosts/<hostname>/`. Shared configuration lives at the top level.
+
 # Development
 
 Once you have the environment setup, you can use the `devShells` support via direnv to manage the development environment for this project.
@@ -48,7 +52,7 @@ Nix releases major version updates every six months and security fixes throughou
 
 2. Update configuration
 
-   a. Update the release branches in `flake.nix` (`nixpkgs`, `home-manager`, `nix-darwin`)
+   a. Update the release branches of the inputs in `flake.nix`
    b. Update packages given the latest [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes) (removed and renamed packages)
    c. Update nix-darwin configuration and `system.stateVersion` given the latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
    d. Update home-manager configuration and `home.stateVersion` given the latest [release notes](https://nix-community.github.io/home-manager/release-notes/release-notes.html)

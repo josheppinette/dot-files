@@ -10,10 +10,10 @@
     nix-darwin.url = "github:LnL7/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-system-graphics.url = "github:soupglasses/nix-system-graphics/5a8d749e977090c7f8c5b920b13262174b2d7b55";
+    nix-system-graphics.url = "github:soupglasses/nix-system-graphics";
     nix-system-graphics.inputs.nixpkgs.follows = "nixpkgs";
 
-    system-manager.url = "github:numtide/system-manager/c9e35e9b7d698533a32c7e34dfdb906e1e0b7d0a";
+    system-manager.url = "github:numtide/system-manager/release-26.05";
     system-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     llm-agents.url = "github:numtide/llm-agents.nix";
@@ -24,6 +24,7 @@
 
   outputs =
     {
+      self,
       determinate,
       home-manager,
       llm-agents,
@@ -33,82 +34,86 @@
       system-manager,
       vim-rec,
       ...
-    }@inputs:
+    }:
     let
-      pkgs = import nixpkgs {
-        config.allowUnfree = true;
-        overlays = [
-          (final: prev: {
-            llm-agents = llm-agents.packages.${prev.stdenv.hostPlatform.system};
-            vimPlugins = prev.vimPlugins // {
-              vim-rec = prev.vimUtils.buildVimPlugin {
-                pname = "vim-rec";
-                version = vim-rec.shortRev;
-                src = vim-rec;
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [
+            (_: prev: {
+              llm-agents = llm-agents.packages.${system};
+              vimPlugins = prev.vimPlugins // {
+                vim-rec = prev.vimUtils.buildVimPlugin {
+                  pname = "vim-rec";
+                  version = vim-rec.shortRev;
+                  src = vim-rec;
+                };
               };
-            };
-          })
-        ];
-        system = builtins.currentSystem;
-      };
-      user =
-        let
-          sudoUser = builtins.getEnv "SUDO_USER";
-          envUser = builtins.getEnv "USER";
-        in
-        if sudoUser != "" then
-          sudoUser
-        else if envUser != "" then
-          envUser
-        else
-          throw "could not determine user: run with --impure";
-      home =
-        with pkgs.stdenv;
-        if isLinux then
-          /home/${user}
-        else if isDarwin then
-          /Users/${user}
-        else
-          throw "unsupported system: ${system}";
-      host = builtins.getEnv "HOST";
+            })
+          ];
+        };
+
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "aarch64-darwin"
+        "x86_64-linux"
+      ];
+
+      mkDarwin =
+        system: module:
+        nix-darwin.lib.darwinSystem {
+          modules = [
+            { nixpkgs.pkgs = mkPkgs system; }
+            determinate.darwinModules.default
+            home-manager.darwinModules.home-manager
+            module
+          ];
+        };
+
+      mkHome =
+        system: module:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = mkPkgs system;
+          modules = [ module ];
+        };
+
+      mkSystem =
+        system: module:
+        system-manager.lib.makeSystemConfig {
+          modules = [
+            { nixpkgs.hostPlatform = system; }
+            nix-system-graphics.systemModules.default
+            module
+          ];
+        };
     in
     {
-      systemConfigs.default = system-manager.lib.makeSystemConfig {
-        modules = [
-          nix-system-graphics.systemModules.default
-          {
-            nixpkgs.hostPlatform = builtins.currentSystem;
-            system-graphics.enable = true;
-          }
-        ];
-      };
+      darwinConfigurations.mbp = mkDarwin "aarch64-darwin" ./hosts/mbp/darwin.nix;
 
-      darwinConfigurations.${host} = nix-darwin.lib.darwinSystem {
-        specialArgs = { inherit inputs user home; };
-        modules = [
-          { nixpkgs.pkgs = pkgs; }
-          determinate.darwinModules.default
-          home-manager.darwinModules.home-manager
-          ./darwin.nix
-        ];
-      };
+      homeConfigurations."josh@t480" = mkHome "x86_64-linux" ./hosts/t480/home.nix;
 
-      homeConfigurations.${user} = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [ ./home.nix ];
-        extraSpecialArgs = {
-          inherit user home;
-        };
-      };
+      systemConfigs.t480 = mkSystem "x86_64-linux" ./hosts/t480/system.nix;
 
-      devShells.${builtins.currentSystem}.default = pkgs.mkShell {
-        packages = [
-          pkgs.nixfmt
-          pkgs.pre-commit
-          pkgs.prettier
-          pkgs.shfmt
-          pkgs.stylua
-        ];
-      };
+      # `nix flake check` skips `systemConfigs`.
+      checks = forAllSystems (
+        system: nixpkgs.lib.filterAttrs (_: config: config.system == system) self.systemConfigs
+      );
+
+      devShells = forAllSystems (system: {
+        default =
+          let
+            pkgs = mkPkgs system;
+          in
+          pkgs.mkShell {
+            packages = [
+              pkgs.nixfmt
+              pkgs.pre-commit
+              pkgs.prettier
+              pkgs.shfmt
+              pkgs.stylua
+            ];
+          };
+      });
     };
 }

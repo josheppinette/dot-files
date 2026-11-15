@@ -58,6 +58,6 @@ repos:
       - id: nix flake check
         name: nix flake check
         language: system
-        entry: nix flake check --all-systems --impure
+        entry: nix flake check --all-systems --no-build
         files: '^flake\.lock$|\.nix$'
         pass_filenames: false

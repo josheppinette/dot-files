@@ -1,9 +1,4 @@
 {
-  user,
-  home,
-  ...
-}:
-{
   determinateNix.enable = true;
 
   determinateNix.customSettings = {
@@ -14,14 +9,13 @@
     sandbox = "relaxed";
   };
 
-  users.users.${user}.home = home;
+  users.users.jteppinette.home = "/Users/jteppinette";
 
   system.stateVersion = 7;
 
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit user home; };
-    users.${user} = import ./home.nix;
+    users.jteppinette = import ../../home.nix;
   };
 }

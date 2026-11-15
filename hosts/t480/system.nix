@@ -1,0 +1,3 @@
+{
+  system-graphics.enable = true;
+}

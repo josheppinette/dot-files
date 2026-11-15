@@ -1,9 +1,4 @@
-{
-  pkgs,
-  user,
-  home,
-  ...
-}:
+{ pkgs, ... }:
 
 let
   python = pkgs.python3.withPackages (ps: [
@@ -14,10 +9,6 @@ let
   ]);
 in
 {
-  targets.genericLinux.enable = pkgs.stdenv.isLinux;
-
-  home.username = user;
-  home.homeDirectory = home;
   home.stateVersion = "26.05";
 
   home.packages = [
