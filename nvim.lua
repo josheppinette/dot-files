@@ -298,4 +298,6 @@ require("lazy").setup({
 		"gpanders/nvim-parinfer",
 		ft = "lisp",
 	},
+}, {
+	lockfile = vim.g.lazy_lockfile,
 })

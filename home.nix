@@ -185,7 +185,10 @@ in
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    extraLuaConfig = builtins.readFile ./nvim.lua;
+    extraLuaConfig = ''
+      vim.g.lazy_lockfile = "${toString home}/Software/dot-files/lazy-lock.json"
+    ''
+    + builtins.readFile ./nvim.lua;
     extraPackages = [
       pkgs.cargo
       pkgs.yarn
