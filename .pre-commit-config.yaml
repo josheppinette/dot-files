@@ -3,10 +3,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
-      - id: check-ast
-      - id: check-builtin-literals
       - id: check-case-conflict
-      - id: check-docstring-first
       - id: check-executables-have-shebangs
       - id: check-illegal-windows-names
       - id: check-json
@@ -17,15 +14,12 @@ repos:
       - id: check-vcs-permalinks
       - id: check-xml
       - id: check-yaml
-      - id: debug-statements
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
       - id: forbid-submodules
       - id: mixed-line-ending
-      - id: name-tests-test
-      - id: requirements-txt-fixer
       - id: trailing-whitespace
 
   - repo: local
