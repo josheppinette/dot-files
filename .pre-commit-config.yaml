@@ -25,8 +25,6 @@ repos:
       - id: forbid-submodules
       - id: mixed-line-ending
       - id: name-tests-test
-      - id: pretty-format-json
-        exclude: '^lazy-lock\.json$'
       - id: requirements-txt-fixer
       - id: trailing-whitespace
 
