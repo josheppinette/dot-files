@@ -15,12 +15,10 @@ let
 in
 {
   targets.genericLinux.enable = pkgs.stdenv.isLinux;
-  targets.darwin.copyApps.enable = false;
-  targets.darwin.linkApps.enable = pkgs.stdenv.isDarwin;
 
   home.username = user;
   home.homeDirectory = home;
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
   home.packages = [
     # ai
@@ -28,7 +26,7 @@ in
     pkgs.llm-agents.pi
 
     # formatters
-    pkgs.nixfmt-rfc-style
+    pkgs.nixfmt
 
     # utilities
     pkgs.curl
@@ -185,7 +183,7 @@ in
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    extraLuaConfig = ''
+    initLua = ''
       vim.g.lazy_lockfile = "${toString home}/Software/dot-files/lazy-lock.json"
     ''
     + builtins.readFile ./nvim.lua;
@@ -203,10 +201,10 @@ in
     enable = true;
     enableDefaultConfig = false;
     includes = [ "~/.ssh/config.local" ];
-    matchBlocks."*" = {
-      serverAliveInterval = 60;
-      serverAliveCountMax = 30;
-      identityAgent =
+    settings."*" = {
+      ServerAliveInterval = 60;
+      ServerAliveCountMax = 30;
+      IdentityAgent =
         if pkgs.stdenv.isDarwin then
           ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
         else

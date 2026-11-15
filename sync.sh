@@ -11,7 +11,7 @@ system_darwin() {
 	if ! command -v darwin-rebuild; then
 		sudo --preserve-env=HOST,HOME \
 			nix run \
-			nix-darwin/nix-darwin-25.11 -- switch --flake "$DIR" --impure
+			nix-darwin/nix-darwin-26.05 -- switch --flake "$DIR" --impure
 	else
 		sudo --preserve-env=HOST,HOME \
 			darwin-rebuild switch --flake "$DIR" --impure
@@ -20,7 +20,7 @@ system_darwin() {
 
 system_linux() {
 	if ! command -v home-manager >/dev/null 2>&1; then
-		nix run home-manager/release-25.11 -- switch --flake "$DIR" --impure
+		nix run home-manager/release-26.05 -- switch --flake "$DIR" --impure
 	else
 		home-manager switch --flake "$DIR" --impure
 	fi

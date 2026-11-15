@@ -1,7 +1,6 @@
 {
   user,
   home,
-  inputs,
   ...
 }:
 {
@@ -17,13 +16,12 @@
 
   users.users.${user}.home = home;
 
-  system.stateVersion = 6;
+  system.stateVersion = 7;
 
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit user home; };
     users.${user} = import ./home.nix;
-    sharedModules = [ inputs.mac-app-util.homeManagerModules.default ];
   };
 }
