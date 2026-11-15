@@ -42,44 +42,28 @@ After any changes have been made, run `./sync.sh` to update the system.
 
 Nix releases major version updates every six months and security fixes throughout that period. We should maintain updated software by running the following steps on all machines at a regular cadence.
 
-1. Note system version
-
-   > We will use this system version to run a report at the end of the upgrade process.
-
-   ```sh
-   $ readlink /nix/var/nix/profiles/system
-   ```
-
-2. Update configuration
+1. Update configuration
 
    a. Update the release branches of the inputs in `flake.nix`
    b. Update packages given the latest [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes) (removed and renamed packages)
    c. Update nix-darwin configuration and `system.stateVersion` given the latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
    d. Update home-manager configuration and `home.stateVersion` given the latest [release notes](https://nix-community.github.io/home-manager/release-notes/release-notes.html)
 
-3. Run flake update
+2. Run flake update
 
    ```sh
    $ nix flake update
    ```
 
-4. Sync
+3. Sync
 
-   > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful.
+   > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful. Each sync prints a package diff before activating.
 
    ```sh
    ./sync.sh
    ```
 
-5. Report changes
-
-   ```sh
-   $ nix store diff-closures \
-     /nix/var/nix/profiles/system-<version>-link \
-     /nix/var/nix/profiles/system
-   ```
-
-6. Commit & Push
+4. Commit & Push
 
    ```
    $ git add -A && git commit -m "<msg>" && git push
