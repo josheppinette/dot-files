@@ -60,5 +60,5 @@ repos:
         name: nix flake check
         language: system
         entry: nix flake check --all-systems --impure
-        files: '^flake.lock$|^\.nix$'
+        files: '^flake\.lock$|\.nix$'
         pass_filenames: false
