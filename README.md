@@ -1,25 +1,33 @@
-_This repo contains the Nix configuration for my MacOS and Linux machines. Follow the documentation below to get started._
+_Nix configuration for my macOS and Linux machines._
 
-# Getting Started
+# Installation
 
 1. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/)
 
 2. [Install Nix](https://zero-to-nix.com/start/install/)
 
-3. Sync
+3. Clone
 
-   ```
-   $ ./sync.sh
+   ```sh
+   $ nix run nixpkgs#git -- clone git@github.com:josheppinette/dot-files.git ~/Software/dot-files
    ```
 
-4. Set zsh as default shell in a new terminal
+4. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
+
+5. Sync
+
+   ```sh
+   $ ~/Software/dot-files/sync.sh
+   ```
+
+6. Set zsh as default shell in a new terminal
 
    ```sh
    $ command -v zsh | sudo tee -a /etc/shells
    $ chsh -s "$(command -v zsh)"
    ```
 
-5. Create the [backup](#backups) repository
+7. Create the [backup](#backups) repository
 
    ```sh
    $ borgmatic repo-create --encryption none
@@ -36,7 +44,18 @@ $ borgmatic extract --archive latest --path ~/Software/linux --destination /tmp/
 $ borgmatic repo-info                                   # repository size
 ```
 
-# Organization
+# Development
+
+## Setup
+
+Load the dev shell (formatters, pre-commit) with direnv:
+
+```sh
+$ direnv allow
+$ pre-commit install
+```
+
+## Organization
 
 - `flake.nix`: declares each machine by hostname
 - `hosts/<hostname>/`: machine-specific configuration
@@ -44,51 +63,28 @@ $ borgmatic repo-info                                   # repository size
 
 Handle macOS and Linux differences inline with `pkgs.stdenv.isDarwin`. Avoid custom options and frameworks like flake-parts until more machines need them.
 
-# Development
+## Updating
 
-Once you have the environment setup, you can use the `devShells` support via direnv to manage the development environment for this project.
+### Weekly: update inputs
 
-**Setup**
+Pulls security fixes and package updates within the current release.
 
 ```sh
-$ direnv allow
-$ pre-commit install
+$ nix flake update
+$ ./sync.sh
+$ git commit -am "update flake" && git push
 ```
 
-**Making Changes**
+Then run `git pull && ./sync.sh` on the other machines.
 
-After any changes have been made, run `./sync.sh` to update the system.
+### Every six months: upgrade the release
 
-# Updating
+nixpkgs releases in May and November (`YY.05`, `YY.11`), and each release gets fixes for about seven months. Upgrade within a month of each release.
 
-Nix releases major version updates every six months and security fixes throughout that period. We should maintain updated software by running the following steps on all machines at a regular cadence.
-
-1. Update configuration
-
-   a. Update the release branches of the inputs in `flake.nix`
-   b. Update packages given the latest [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes) (removed and renamed packages)
-   c. Update nix-darwin configuration and `system.stateVersion` given the latest [changes](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG)
-   d. Update home-manager configuration and `home.stateVersion` given the latest [release notes](https://nix-community.github.io/home-manager/release-notes/release-notes.html)
-
-2. Run flake update
-
-   ```sh
-   $ nix flake update
-   ```
-
-3. Sync
-
-   > Any issues will be logged in the terminal. Make any necessary updates and re-run sync until the switch is successful. Each sync prints a package diff before activating.
-
-   ```sh
-   ./sync.sh
-   ```
-
-4. Commit & Push
-
-   ```
-   $ git add -A && git commit -m "<msg>" && git push
-   ```
+1. Update the release branches of the inputs in `flake.nix`
+2. Fix removed and renamed packages given the [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes)
+3. Update the configuration given the [nix-darwin changelog](https://github.com/nix-darwin/nix-darwin/blob/master/CHANGELOG) and [home-manager release notes](https://nix-community.github.io/home-manager/release-notes/release-notes.html). Only bump `stateVersion` after reading what it changes.
+4. Run the weekly steps, re-running `./sync.sh` until the switch succeeds
 
 # References
 
@@ -102,7 +98,7 @@ Nix releases major version updates every six months and security fixes throughou
 - [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world)
 
-**Examples Configurations**
+**Example Configurations**
 
 - [Misterio77/nix-starter-configs](https://github.com/Misterio77/nix-starter-configs)
 - [ryan4yin/nix-config](https://github.com/ryan4yin/nix-config)
