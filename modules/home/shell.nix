@@ -26,7 +26,6 @@
   programs.eza.enable = true;
   programs.fd.enable = true;
   programs.jq.enable = true;
-  programs.nix-index.enable = true;
   programs.visidata.enable = true;
 
   programs.direnv = {

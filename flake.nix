@@ -16,6 +16,9 @@
     system-manager.url = "github:numtide/system-manager/release-26.05";
     system-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     vim-rec.url = "github:zaid/vim-rec";
