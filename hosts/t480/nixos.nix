@@ -56,6 +56,8 @@
     STOP_CHARGE_THRESH_BAT1 = 80;
   };
 
+  xdg.mime.defaultApplications."text/markdown" = "firefox.desktop";
+
   programs.nix-ld.enable = true;
 
   programs._1password.enable = true;
