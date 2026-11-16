@@ -38,6 +38,15 @@
   services.blueman.enable = true;
   services.fwupd.enable = true;
 
+  # Limit charging of both batteries (internal BAT0, removable BAT1) to extend
+  # their lifespan; `sudo tlp fullcharge` overrides once.
+  services.tlp.settings = {
+    START_CHARGE_THRESH_BAT0 = 75;
+    STOP_CHARGE_THRESH_BAT0 = 80;
+    START_CHARGE_THRESH_BAT1 = 75;
+    STOP_CHARGE_THRESH_BAT1 = 80;
+  };
+
   programs.nix-ld.enable = true;
 
   programs._1password.enable = true;
