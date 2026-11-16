@@ -2,30 +2,31 @@ _Nix configuration for my macOS and Linux machines._
 
 # Installation
 
-1. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/)
+1. [Install Nix](https://zero-to-nix.com/start/install/)
 
-2. [Install Nix](https://zero-to-nix.com/start/install/)
-
-3. Clone
+2. Clone
 
    ```sh
-   $ nix run nixpkgs#git -- clone git@github.com:josheppinette/dot-files.git ~/Software/dot-files
+   $ nix run nixpkgs#git -- clone https://github.com/josheppinette/dot-files.git ~/Software/dot-files
+   $ nix run nixpkgs#git -- -C ~/Software/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
    ```
 
-4. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
+3. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
 
-5. Sync
+4. Sync
 
    ```sh
    $ ~/Software/dot-files/sync.sh
    ```
 
-6. Set zsh as default shell in a new terminal
+5. Set zsh as default shell in a new terminal
 
    ```sh
    $ command -v zsh | sudo tee -a /etc/shells
    $ chsh -s "$(command -v zsh)"
    ```
+
+6. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
 
 7. Create the [backup](#backups) repository
 
