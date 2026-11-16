@@ -15,9 +15,11 @@ nh() {
 
 if [ "$(uname)" = "Darwin" ]; then
 	nh darwin switch "$DIR"
+elif [ -e /etc/NIXOS ]; then
+	nh os switch "$DIR"
 else
-	nh home switch "$DIR"
-	sudo -H "$NIX" run --inputs-from "$DIR" system-manager -- switch --flake "$DIR"
+	echo "sync: unsupported OS, expected macOS or NixOS" >&2
+	exit 1
 fi
 
 nh clean all --keep-since 14d --keep 3

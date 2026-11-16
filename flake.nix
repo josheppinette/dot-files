@@ -10,11 +10,8 @@
     nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-system-graphics.url = "github:soupglasses/nix-system-graphics";
-    nix-system-graphics.inputs.nixpkgs.follows = "nixpkgs";
-
-    system-manager.url = "github:numtide/system-manager/release-26.05";
-    system-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-hardware.url = "github:nixos/nixos-hardware";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
@@ -27,14 +24,11 @@
 
   outputs =
     inputs@{
-      self,
       determinate,
       home-manager,
       llm-agents,
       nix-darwin,
-      nix-system-graphics,
       nixpkgs,
-      system-manager,
       vim-rec,
       ...
     }:
@@ -75,20 +69,15 @@
           ];
         };
 
-      mkHome =
+      mkNixos =
         system: module:
-        home-manager.lib.homeManagerConfiguration {
-          pkgs = mkPkgs system;
-          extraSpecialArgs = { inherit inputs; };
-          modules = [ module ];
-        };
-
-      mkSystem =
-        system: module:
-        system-manager.lib.makeSystemConfig {
+        nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; };
           modules = [
-            { nixpkgs.hostPlatform = system; }
-            nix-system-graphics.systemModules.default
+            { nixpkgs.pkgs = mkPkgs system; }
+            determinate.nixosModules.default
+            home-manager.nixosModules.home-manager
+            { home-manager.extraSpecialArgs = { inherit inputs; }; }
             module
           ];
         };
@@ -96,14 +85,7 @@
     {
       darwinConfigurations.mbp = mkDarwin "aarch64-darwin" ./hosts/mbp/darwin.nix;
 
-      homeConfigurations."josh@t480" = mkHome "x86_64-linux" ./hosts/t480/home.nix;
-
-      systemConfigs.t480 = mkSystem "x86_64-linux" ./hosts/t480/system.nix;
-
-      # `nix flake check` skips `systemConfigs`.
-      checks = forAllSystems (
-        system: nixpkgs.lib.filterAttrs (_: config: config.system == system) self.systemConfigs
-      );
+      nixosConfigurations.t480 = mkNixos "x86_64-linux" ./hosts/t480/nixos.nix;
 
       devShells = forAllSystems (system: {
         default =

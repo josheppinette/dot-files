@@ -2,6 +2,8 @@ _Nix configuration for my macOS and Linux machines._
 
 # Installation
 
+## macOS
+
 1. [Install Nix](https://zero-to-nix.com/start/install/)
 
 2. Clone
@@ -26,9 +28,41 @@ _Nix configuration for my macOS and Linux machines._
    $ chsh -s "$(command -v zsh)"
    ```
 
-6. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
+6. Finish [setup](#setup)
 
-7. Create the [backup](#backups) repository
+## NixOS
+
+1. Install [NixOS](https://nixos.org/download/) with the graphical installer: choose disk encryption, no desktop, and the username from `hosts/<hostname>/nixos.nix` (or add the machine under `hosts/` and `flake.nix`). The hostname is set by the first build.
+
+2. Clone
+
+   ```sh
+   $ nix-shell -p git --run "git clone https://github.com/josheppinette/dot-files.git ~/Software/dot-files"
+   $ nix-shell -p git --run "git -C ~/Software/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git"
+   ```
+
+3. Replace `hosts/<hostname>/hardware-configuration.nix` with the generated one, and stage it (flakes ignore untracked files)
+
+   ```sh
+   $ cp /etc/nixos/hardware-configuration.nix ~/Software/dot-files/hosts/<hostname>/
+   $ nix-shell -p git --run "git -C ~/Software/dot-files add -A"
+   ```
+
+   The installer also puts some encryption settings in `/etc/nixos/configuration.nix` (`boot.initrd.luks.devices` for swap, `boot.initrd.secrets` for the keyfile). Copy any it has into `hosts/<hostname>/nixos.nix`, or the next boot may hang waiting for them.
+
+4. Build, then reboot
+
+   ```sh
+   $ sudo nixos-rebuild boot --flake ~/Software/dot-files#<hostname> --option experimental-features 'nix-command flakes'
+   ```
+
+5. Finish [setup](#setup)
+
+## Setup
+
+1. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
+
+2. Create the [backup](#backups) repository
 
    ```sh
    $ borgmatic repo-create --encryption none
@@ -47,7 +81,7 @@ $ borgmatic repo-info                                   # repository size
 
 # Development
 
-## Setup
+## Dev Shell
 
 Load the dev shell (formatters, pre-commit) with direnv:
 
@@ -93,7 +127,8 @@ nixpkgs releases in May and November (`YY.05`, `YY.11`), and each release gets f
 
 - [Home Manager options](https://home-manager-options.extranix.com)
 - [nix-darwin options](https://nix-darwin.github.io/nix-darwin/manual/)
-- [system-manager](https://github.com/numtide/system-manager)
+- [NixOS options](https://search.nixos.org/options)
+- [nixos-hardware](https://github.com/NixOS/nixos-hardware)
 - [nh](https://github.com/nix-community/nh)
 - [borgmatic](https://torsion.org/borgmatic/)
 - [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
