@@ -37,6 +37,8 @@
 
   programs.zsh.enable = true;
 
+  programs.firefox.enable = true;
+
   users.users.josh = {
     isNormalUser = true;
     extraGroups = [
