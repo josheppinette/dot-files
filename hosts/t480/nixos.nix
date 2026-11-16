@@ -20,6 +20,17 @@
   boot.resumeDevice = "/dev/mapper/luks-a4843226-ebdf-4932-823f-cddaa4ed9fd8";
   boot.kernelParams = [ "resume_offset=246579200" ];
 
+  # Closing the lid suspends, then hibernates after 2h on battery (or sooner if
+  # the battery runs low). On AC it stays suspended.
+  services.logind.settings.Login.HandleLidSwitch = "suspend-then-hibernate";
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "2h";
+    HibernateOnACPower = false;
+  };
+
+  # Hibernate instead of hybrid-sleeping when the battery is critically low.
+  services.upower.criticalPowerAction = "Hibernate";
+
   networking.hostName = "t480";
   networking.networkmanager.enable = true;
 
@@ -73,6 +84,10 @@
     useUserPackages = true;
     users.josh = {
       imports = [ ../../modules/home ];
+
+      # Let logind handle the lid (see HandleLidSwitch) instead of XFCE's power
+      # manager, which can't suspend-then-hibernate.
+      xfconf.settings.xfce4-power-manager."logind-handle-lid-switch" = true;
 
       # Start 1Password minimized to the tray so its SSH agent is available.
       xdg.autostart = {
