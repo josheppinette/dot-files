@@ -14,7 +14,9 @@ nh() {
 }
 
 if [ "$(uname)" = "Darwin" ]; then
-	nh darwin switch "$DIR"
+	# nh would use `hostname`, which can include `.local`; nix-darwin names
+	# machines by LocalHostName instead.
+	nh darwin switch "$DIR" --hostname "$(scutil --get LocalHostName)"
 elif [ -e /etc/NIXOS ]; then
 	nh os switch "$DIR"
 else

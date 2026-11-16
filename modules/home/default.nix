@@ -1,8 +1,10 @@
 {
   imports = [
+    ./1password.nix
     ./ai.nix
     ./backup.nix
     ./dev.nix
+    ./firefox.nix
     ./git.nix
     ./kitty.nix
     ./neovim

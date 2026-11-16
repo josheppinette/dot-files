@@ -37,8 +37,6 @@
   services.automatic-timezoned.enable = true;
   i18n.defaultLocale = "en_US.UTF-8";
 
-  nix.settings.trusted-users = [ "@wheel" ];
-
   services.xserver.enable = true;
   services.xserver.desktopManager.xfce.enable = true;
   services.pipewire = {
@@ -67,8 +65,6 @@
   };
 
   programs.zsh.enable = true;
-
-  programs.firefox.enable = true;
 
   users.users.josh = {
     isNormalUser = true;
@@ -103,20 +99,6 @@
           "panels/panel-1/size" = 36;
           "panels/panel-1/icon-size" = 0;
         };
-      };
-
-      # Start 1Password minimized to the tray so its SSH agent is available.
-      xdg.autostart = {
-        enable = true;
-        entries = [
-          "${
-            pkgs.makeDesktopItem {
-              name = "1password";
-              desktopName = "1Password";
-              exec = "1password --silent";
-            }
-          }/share/applications/1password.desktop"
-        ];
       };
     };
   };

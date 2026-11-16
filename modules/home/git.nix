@@ -1,3 +1,5 @@
+{ lib, ... }:
+
 {
   programs.git = {
     enable = true;
@@ -22,7 +24,7 @@
       rebase.autostash = "true";
       rebase.updateRefs = "true";
       tag.sort = "version:refname";
-      user.email = "josheppinette@gmail.com";
+      user.email = lib.mkDefault "josheppinette@gmail.com";
       user.name = "Joshua Taylor Eppinette";
     };
   };
