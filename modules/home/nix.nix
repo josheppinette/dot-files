@@ -11,4 +11,7 @@
   # Prebuilt weekly database for `nix-locate` and command-not-found, updated
   # with `nix flake update`.
   programs.nix-index.enable = true;
+
+  # `, cmd` runs any program without installing it.
+  programs.nix-index-database.comma.enable = true;
 }
