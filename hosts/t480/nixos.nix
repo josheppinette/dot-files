@@ -9,6 +9,17 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.initrd.luks.devices."luks-a4843226-ebdf-4932-823f-cddaa4ed9fd8".allowDiscards = true;
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 16 * 1024;
+    }
+  ];
+  boot.resumeDevice = "/dev/mapper/luks-a4843226-ebdf-4932-823f-cddaa4ed9fd8";
+  boot.kernelParams = [ "resume_offset=246579200" ];
+
   networking.hostName = "t480";
   networking.networkmanager.enable = true;
 
