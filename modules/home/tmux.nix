@@ -9,7 +9,7 @@
 
   home.file.".config/tms/config.toml".text = ''
     [[search_dirs]]
-    path = "~/Software"
+    path = "~/Projects"
     depth = 1
   '';
 

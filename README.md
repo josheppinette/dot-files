@@ -9,8 +9,8 @@ _Nix configuration for my macOS and Linux machines._
 2. Clone
 
    ```sh
-   $ nix run nixpkgs#git -- clone https://github.com/josheppinette/dot-files.git ~/Software/dot-files
-   $ nix run nixpkgs#git -- -C ~/Software/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
+   $ nix run nixpkgs#git -- clone https://github.com/josheppinette/dot-files.git ~/Projects/dot-files
+   $ nix run nixpkgs#git -- -C ~/Projects/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
    ```
 
 3. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
@@ -18,7 +18,7 @@ _Nix configuration for my macOS and Linux machines._
 4. Sync
 
    ```sh
-   $ ~/Software/dot-files/sync.sh
+   $ ~/Projects/dot-files/sync.sh
    ```
 
 5. Set zsh as default shell in a new terminal
@@ -34,18 +34,20 @@ _Nix configuration for my macOS and Linux machines._
 
 1. Install [NixOS](https://nixos.org/download/) with the graphical installer: choose disk encryption, no desktop, and the username from `hosts/<hostname>/nixos.nix` (or add the machine under `hosts/` and `flake.nix`). The hostname is set by the first build.
 
-2. Clone
+2. Clone, in a shell with git
 
    ```sh
-   $ nix-shell -p git --run "git clone https://github.com/josheppinette/dot-files.git ~/Software/dot-files"
-   $ nix-shell -p git --run "git -C ~/Software/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git"
+   $ nix-shell -p git
+   $ git clone https://github.com/josheppinette/dot-files.git ~/Projects/dot-files
+   $ git -C ~/Projects/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
    ```
 
 3. Replace `hosts/<hostname>/hardware-configuration.nix` with the generated one, and stage it (flakes ignore untracked files)
 
    ```sh
-   $ cp /etc/nixos/hardware-configuration.nix ~/Software/dot-files/hosts/<hostname>/
-   $ nix-shell -p git --run "git -C ~/Software/dot-files add -A"
+   $ cp /etc/nixos/hardware-configuration.nix ~/Projects/dot-files/hosts/<hostname>/
+   $ git -C ~/Projects/dot-files add -A
+   $ exit
    ```
 
    The installer also puts some encryption settings in `/etc/nixos/configuration.nix` (`boot.initrd.luks.devices` for swap, `boot.initrd.secrets` for the keyfile). Copy any it has into `hosts/<hostname>/nixos.nix`, or the next boot may hang waiting for them.
@@ -53,7 +55,7 @@ _Nix configuration for my macOS and Linux machines._
 4. Build, then reboot
 
    ```sh
-   $ sudo nixos-rebuild boot --flake ~/Software/dot-files#<hostname> --option experimental-features 'nix-command flakes'
+   $ sudo nixos-rebuild boot --flake ~/Projects/dot-files#<hostname> --option experimental-features 'nix-command flakes'
    ```
 
 5. Finish [setup](#setup)
@@ -75,7 +77,7 @@ _Nix configuration for my macOS and Linux machines._
 ```sh
 $ borgmatic list                                        # archives
 $ borgmatic list --archive latest --find 'package.json' # find a file
-$ borgmatic extract --archive latest --path ~/Software/linux --destination /tmp/restore
+$ borgmatic extract --archive latest --path ~/Projects/linux --destination /tmp/restore
 $ borgmatic repo-info                                   # repository size
 ```
 
