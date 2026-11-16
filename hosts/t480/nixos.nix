@@ -85,9 +85,25 @@
     users.josh = {
       imports = [ ../../modules/home ];
 
-      # Let logind handle the lid (see HandleLidSwitch) instead of XFCE's power
-      # manager, which can't suspend-then-hibernate.
-      xfconf.settings.xfce4-power-manager."logind-handle-lid-switch" = true;
+      # Smaller than the Mac's 16pt because of the 1.5x DPI below.
+      programs.kitty.settings.font_size = "12.0";
+
+      xfconf.settings = {
+        # Let logind handle the lid (see HandleLidSwitch) instead of XFCE's power
+        # manager, which can't suspend-then-hibernate.
+        xfce4-power-manager."logind-handle-lid-switch" = true;
+
+        # Scale the UI 1.5x for the 14" 2560x1440 (~210 DPI) panel.
+        xsettings = {
+          "Xft/DPI" = 144;
+          "Gtk/CursorThemeSize" = 36;
+        };
+        xfwm4."general/theme" = "Default-hdpi";
+        xfce4-panel = {
+          "panels/panel-1/size" = 36;
+          "panels/panel-1/icon-size" = 0;
+        };
+      };
 
       # Start 1Password minimized to the tray so its SSH agent is available.
       xdg.autostart = {

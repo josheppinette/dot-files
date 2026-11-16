@@ -1,3 +1,5 @@
+{ lib, ... }:
+
 {
   programs.kitty = {
     enable = true;
@@ -9,7 +11,7 @@
       "cmd+t" = "discard_event";
     };
     settings = {
-      font_size = "16.0";
+      font_size = lib.mkDefault "16.0";
       macos_option_as_alt = "yes";
       tab_bar_style = "hidden";
     };
