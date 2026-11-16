@@ -19,6 +19,23 @@ _This repo contains the Nix configuration for my MacOS and Linux machines. Follo
    $ chsh -s "$(command -v zsh)"
    ```
 
+5. Create the [backup](#backups) repository
+
+   ```sh
+   $ borgmatic repo-create --encryption none
+   ```
+
+# Backups
+
+`$HOME` is backed up hourly to `~/.local/state/borg` with [borgmatic](https://torsion.org/borgmatic/). Add a `.nobackup` file to any directory that shouldn't be backed up.
+
+```sh
+$ borgmatic list                                        # archives
+$ borgmatic list --archive latest --find 'package.json' # find a file
+$ borgmatic extract --archive latest --path ~/Software/linux --destination /tmp/restore
+$ borgmatic repo-info                                   # repository size
+```
+
 # Organization
 
 - `flake.nix`: declares each machine by hostname
@@ -81,6 +98,7 @@ Nix releases major version updates every six months and security fixes throughou
 - [nix-darwin options](https://nix-darwin.github.io/nix-darwin/manual/)
 - [system-manager](https://github.com/numtide/system-manager)
 - [nh](https://github.com/nix-community/nh)
+- [borgmatic](https://torsion.org/borgmatic/)
 - [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world)
 
