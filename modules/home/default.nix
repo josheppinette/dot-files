@@ -6,6 +6,7 @@
     ./git.nix
     ./kitty.nix
     ./neovim
+    ./nix.nix
     ./shell.nix
     ./ssh.nix
     ./tmux.nix

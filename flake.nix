@@ -23,7 +23,7 @@
   };
 
   outputs =
-    {
+    inputs@{
       self,
       determinate,
       home-manager,
@@ -67,6 +67,7 @@
             { nixpkgs.pkgs = mkPkgs system; }
             determinate.darwinModules.default
             home-manager.darwinModules.home-manager
+            { home-manager.extraSpecialArgs = { inherit inputs; }; }
             module
           ];
         };
@@ -75,6 +76,7 @@
         system: module:
         home-manager.lib.homeManagerConfiguration {
           pkgs = mkPkgs system;
+          extraSpecialArgs = { inherit inputs; };
           modules = [ module ];
         };
 
