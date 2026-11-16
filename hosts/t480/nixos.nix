@@ -62,7 +62,23 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.josh = import ../../modules/home;
+    users.josh = {
+      imports = [ ../../modules/home ];
+
+      # Start 1Password minimized to the tray so its SSH agent is available.
+      xdg.autostart = {
+        enable = true;
+        entries = [
+          "${
+            pkgs.makeDesktopItem {
+              name = "1password";
+              desktopName = "1Password";
+              exec = "1password --silent";
+            }
+          }/share/applications/1password.desktop"
+        ];
+      };
+    };
   };
 
   system.stateVersion = "26.05";
