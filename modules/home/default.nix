@@ -9,6 +9,7 @@
     ./kitty.nix
     ./neovim
     ./nix.nix
+    ./obsidian.nix
     ./shell.nix
     ./ssh.nix
     ./tmux.nix
