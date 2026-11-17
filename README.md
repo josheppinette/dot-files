@@ -6,11 +6,13 @@ _Nix configuration for my macOS and Linux machines._
 
 1. [Install Nix](https://zero-to-nix.com/start/install/)
 
-2. Clone
+2. Clone, in a shell with git
 
    ```sh
-   $ nix run nixpkgs#git -- clone https://github.com/josheppinette/dot-files.git ~/Projects/dot-files
-   $ nix run nixpkgs#git -- -C ~/Projects/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
+   $ nix-shell -p git
+   $ git clone https://github.com/josheppinette/dot-files.git ~/Projects/dot-files
+   $ git -C ~/Projects/dot-files remote set-url origin git@github.com:josheppinette/dot-files.git
+   $ exit
    ```
 
 3. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
