@@ -15,22 +15,28 @@ _Nix configuration for my macOS and Linux machines._
    $ exit
    ```
 
-3. Set the hostname to one declared in `flake.nix`, or add the machine under `hosts/`
+3. Set the local hostname (`scutil --get LocalHostName`) to one declared in `flake.nix`, or add the machine under `hosts/`
 
-4. Sync
+4. Move aside the installer's Nix settings, which nix-darwin manages
+
+   ```sh
+   $ sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
+   ```
+
+5. Sync
 
    ```sh
    $ ~/Projects/dot-files/sync.sh
    ```
 
-5. Set zsh as default shell in a new terminal
+6. Set zsh as default shell in a new terminal
 
    ```sh
    $ command -v zsh | sudo tee -a /etc/shells
    $ chsh -s "$(command -v zsh)"
    ```
 
-6. Finish [setup](#setup)
+7. Finish [setup](#setup)
 
 ## NixOS
 
