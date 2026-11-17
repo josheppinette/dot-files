@@ -92,7 +92,10 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     users.josh = {
-      imports = [ ../../modules/home ];
+      imports = [
+        ../../modules/home
+        ./plasma.nix
+      ];
 
       # The font is smaller than on the Mac because of the 150% scaling.
       programs.kitty.settings.font_size = "12.0";
