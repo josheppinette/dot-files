@@ -86,6 +86,12 @@
       # Smaller than the Mac's 16pt because of the 1.5x DPI below.
       programs.kitty.settings.font_size = "12.0";
 
+      # No AV1 hardware decode on the UHD 620; YouTube falls back to VP9.
+      programs.firefox.policies.Preferences."media.av1.enabled" = {
+        Value = false;
+        Status = "locked";
+      };
+
       xfconf.settings = {
         # Let logind handle the lid (see HandleLidSwitch) instead of XFCE's power
         # manager, which can't suspend-then-hibernate.
