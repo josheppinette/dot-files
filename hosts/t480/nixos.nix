@@ -97,10 +97,16 @@
       # The font is smaller than on the Mac because of the 150% scaling.
       programs.kitty.settings.font_size = "12.0";
 
-      # The UHD 620 can't decode AV1, so this makes YouTube use VP9.
-      programs.firefox.policies.Preferences."media.av1.enabled" = {
-        Value = false;
-        Status = "locked";
+      programs.firefox.policies.Preferences = {
+        # The UHD 620 can't decode AV1, so this makes YouTube use VP9.
+        "media.av1.enabled" = {
+          Value = false;
+          Status = "locked";
+        };
+        "widget.use-xdg-desktop-portal.file-picker" = {
+          Value = 1;
+          Status = "locked";
+        };
       };
     };
   };
