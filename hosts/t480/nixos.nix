@@ -37,24 +37,35 @@
   services.automatic-timezoned.enable = true;
   i18n.defaultLocale = "en_US.UTF-8";
 
-  services.xserver.enable = true;
-  services.xserver.desktopManager.xfce.enable = true;
+  services.desktopManager.plasma6.enable = true;
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    discover
+    elisa
+    kate
+    khelpcenter
+    konsole
+    krdp
+    plasma-browser-integration
+    plasma-keyboard
+    plasma-workspace-wallpapers
+    qrca
+    qtvirtualkeyboard
+  ];
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
   services.pipewire = {
     enable = true;
     pulse.enable = true;
   };
   hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
   services.fwupd.enable = true;
 
-  # Limit charging of both batteries (internal BAT0, removable BAT1) to extend
-  # their lifespan; `sudo tlp fullcharge` overrides once.
-  services.tlp.settings = {
-    START_CHARGE_THRESH_BAT0 = 75;
-    STOP_CHARGE_THRESH_BAT0 = 80;
-    START_CHARGE_THRESH_BAT1 = 75;
-    STOP_CHARGE_THRESH_BAT1 = 80;
-  };
+  # Limit charging to 75-80% to extend the lifespan of both batteries.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="BAT[01]", ATTR{charge_control_start_threshold}="75", ATTR{charge_control_end_threshold}="80"
+  '';
 
   xdg.mime.defaultApplications."text/markdown" = "firefox.desktop";
 
@@ -83,30 +94,13 @@
     users.josh = {
       imports = [ ../../modules/home ];
 
-      # Smaller than the Mac's 16pt because of the 1.5x DPI below.
+      # The font is smaller than on the Mac because of the 150% scaling.
       programs.kitty.settings.font_size = "12.0";
 
-      # No AV1 hardware decode on the UHD 620; YouTube falls back to VP9.
+      # The UHD 620 can't decode AV1, so this makes YouTube use VP9.
       programs.firefox.policies.Preferences."media.av1.enabled" = {
         Value = false;
         Status = "locked";
-      };
-
-      xfconf.settings = {
-        # Let logind handle the lid (see HandleLidSwitch) instead of XFCE's power
-        # manager, which can't suspend-then-hibernate.
-        xfce4-power-manager."logind-handle-lid-switch" = true;
-
-        # Scale the UI 1.5x for the 14" 2560x1440 (~210 DPI) panel.
-        xsettings = {
-          "Xft/DPI" = 144;
-          "Gtk/CursorThemeSize" = 36;
-        };
-        xfwm4."general/theme" = "Default-hdpi";
-        xfce4-panel = {
-          "panels/panel-1/size" = 36;
-          "panels/panel-1/icon-size" = 0;
-        };
       };
     };
   };
