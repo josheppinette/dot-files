@@ -83,7 +83,7 @@
         };
     in
     {
-      darwinConfigurations.MacBookPro = mkDarwin "aarch64-darwin" ./hosts/MacBookPro/darwin.nix;
+      darwinConfigurations.MacBook-Pro = mkDarwin "aarch64-darwin" ./hosts/MacBook-Pro/darwin.nix;
 
       nixosConfigurations.t480 = mkNixos "x86_64-linux" ./hosts/t480/nixos.nix;
 
