@@ -1,7 +1,8 @@
 {
   determinateNix.enable = true;
 
-  determinateNix.customSettings.sandbox = "relaxed";
+  # The home-manager-applications build exceeds the 64KB macOS sandbox limit.
+  determinateNix.customSettings.sandbox = false;
 
   programs._1password.enable = true;
   programs._1password-gui.enable = true;
