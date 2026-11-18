@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 let
   home = config.home.homeDirectory;
@@ -120,4 +120,6 @@ in
     enable = true;
     frequency = "hourly";
   };
+
+  systemd.user.services.borgmatic.Unit.ConditionACPower = lib.mkForce "";
 }
