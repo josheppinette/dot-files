@@ -38,38 +38,62 @@ in
 
             # Caches.
             "${home}/.cache"
-            "${home}/.thumbnails"
-            "${home}/.tldrc"
             "${home}/.var/app/*/cache"
-
-            # Package caches and installed toolchains.
-            "${home}/.bun/install/cache"
-            "${home}/.cargo/git"
-            "${home}/.cargo/registry"
-            "${home}/.gradle/caches"
-            "${home}/.gradle/wrapper"
-            "${home}/.ivy2/cache"
-            "${home}/.m2/repository"
-            "${home}/.npm"
-            "${home}/.nvm/versions"
-            "${home}/.opam"
-            "${home}/.pyenv/versions"
-            "${home}/.rustup"
-            "${home}/.sbt/boot"
-            "${home}/go/pkg/mod"
-
-            # Downloaded models.
-            "${home}/.ollama/models"
 
             # Trash.
             "${home}/.Trash"
             "${home}/.local/share/Trash"
 
-            # Rebuildable project directories.
-            "*/.direnv"
-            "*/.venv"
-            "*/__pycache__"
+            # Package caches and installed toolchains (re-downloadable).
+            "${home}/.rustup"
+            "${home}/.cargo/registry"
+            "${home}/.cargo/git"
+            "${home}/go/pkg/mod"
+            "${home}/.ghcup"
+            "${home}/.cabal/packages"
+            "${home}/.cabal/store"
+            "${home}/.stack"
+            "${home}/.opam"
+            "${home}/.m2/repository"
+            "${home}/.gradle/caches"
+            "${home}/.gradle/wrapper"
+            "${home}/.ivy2/cache"
+            "${home}/.sbt/boot"
+            "${home}/.npm"
+            "${home}/.bun/install/cache"
+            "${home}/.local/share/pnpm/store"
+            "${home}/.nvm/versions"
+            "${home}/.pyenv/versions"
+
+            # VM images, containers and models (re-downloadable).
+            "${home}/.vagrant.d/boxes"
+            "${home}/.local/share/containers"
+            "${home}/.ollama/models"
+            "*.iso"
+
+            # Project build output. Only names that are never source belong
+            # here; ambiguous ones (build, target, dist, bin, _build, out) are
+            # kept, so drop a .nobackup in a heavy build directory instead.
+            # Not a copy of .gitignore: ignored files like .env, *.db and
+            # datasets are often the only copy.
             "*/node_modules"
+            "*/.venv"
+            "*/.direnv"
+            "*/__pycache__"
+            "*/.ipynb_checkpoints"
+            "*/.parcel-cache"
+            "*/dist-newstyle"
+            "*/.stack-work"
+            "*/_opam"
+            "*/.gradle"
+            "*/.bsp"
+            "*/.scala-build"
+            "*/.metals"
+            "*/.bloop"
+            "*/.vagrant"
+            "*/.xmake"
+            "*/.zig-cache"
+            "*/zig-out"
           ];
         };
       };
