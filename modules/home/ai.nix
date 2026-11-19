@@ -6,7 +6,6 @@
     pkgs.llm-agents.pi
   ];
 
-  # Models live in ~/.ollama/models, which backup.nix excludes.
   services.ollama.enable = true;
 
   home.file.".claude/status.sh" = {

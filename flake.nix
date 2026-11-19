@@ -45,6 +45,8 @@
           overlays = [
             (_: prev: {
               llm-agents = llm-agents.packages.${system};
+              ollama =
+                if prev.stdenv.isDarwin then prev.callPackage ./pkgs/ollama.nix { } else prev.ollama;
               vimPlugins = prev.vimPlugins // {
                 vim-rec = prev.vimUtils.buildVimPlugin {
                   pname = "vim-rec";

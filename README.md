@@ -123,6 +123,20 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
    ```
 
+# Local AI
+
+Ollama runs local models on both machines. On macOS, `pkgs/ollama.nix` replaces the nixpkgs build, which lacks the much faster MLX engine.
+
+| Host        | Model                          | Use                                            |
+| ----------- | ------------------------------ | ---------------------------------------------- |
+| MacBook-Pro | `qwen3.6:35b-a3b-coding-nvfp4` | Coding with pi                                 |
+| t480        | `qwen3.5:4b`                   | Quick questions only, since it runs on the CPU |
+
+```sh
+$ ollama pull <model>
+$ ollama launch pi --model <model>
+```
+
 # Development
 
 ## Dev Shell
