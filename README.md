@@ -36,7 +36,7 @@ _Nix configuration for my macOS and Linux machines._
    $ chsh -s "$(command -v zsh)"
    ```
 
-7. Finish [setup](#setup)
+7. Continue with [Setup](#setup)
 
 ## NixOS
 
@@ -66,28 +66,62 @@ _Nix configuration for my macOS and Linux machines._
    $ sudo nixos-rebuild boot --flake ~/Projects/dot-files#<hostname> --option experimental-features 'nix-command flakes'
    ```
 
-5. Finish [setup](#setup)
+5. Continue with [Setup](#setup)
 
 ## Setup
 
-1. Set up the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
+1. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
 
-2. Create the [backup](#backups) repository
-
-   ```sh
-   $ borgmatic repo-create --encryption none
-   ```
+2. If the machine backs up to a remote, [create the remote](#creating-the-remote) or [restore from it](#restoring-from-the-remote)
 
 # Backups
 
-`$HOME` is backed up hourly to `~/.local/state/borg` with [borgmatic](https://torsion.org/borgmatic/). Add a `.nobackup` file to any directory that shouldn't be backed up.
+`$HOME` is backed up hourly with [borgmatic](https://torsion.org/borgmatic/) to a local repository in `~/.local/state/borg`, and to a remote repository if the machine sets one in `hosts/<hostname>/`. Add a `.nobackup` file to any directory that shouldn't be backed up.
+
+On a machine with a remote, these commands run on both repositories. Add `--repository local` or `--repository remote` to use one.
 
 ```sh
-$ borgmatic list                                        # archives
-$ borgmatic list --archive latest --find 'package.json' # find a file
-$ borgmatic extract --archive latest --path ~/Projects/linux --destination /tmp/restore
-$ borgmatic repo-info                                   # repository size
+$ borgmatic repo-info                                        # repository size
+$ borgmatic list                                             # archives
+$ borgmatic list --archive latest --find 'package.json'      # find a file
+$ borgmatic extract --archive latest --destination ~/restore # restore files
 ```
+
+## Creating the remote
+
+1. Create an SSH key, and add `~/.ssh/borg.pub` to the remote
+
+   ```sh
+   $ ssh-keygen -t ed25519 -N '' -f ~/.ssh/borg
+   ```
+
+2. Create the repository, pressing Enter at the passphrase prompts. Then save `<hostname>.key` in 1Password and delete the file: without it, the backup can't be restored.
+
+   ```sh
+   $ borgmatic repo-create --repository remote --encryption keyfile-blake2
+   $ borgmatic key export --repository remote --path <hostname>.key
+   ```
+
+## Restoring from the remote
+
+1. Create an SSH key, and add `~/.ssh/borg.pub` to the remote in place of the old one
+
+   ```sh
+   $ ssh-keygen -t ed25519 -N '' -f ~/.ssh/borg
+   ```
+
+2. Import `<hostname>.key` from 1Password
+
+   ```sh
+   $ borgmatic key import --repository remote --path <hostname>.key
+   ```
+
+3. Restore right away, since hourly backups resume and start pruning old archives once the key is imported. Pick the last archive from before the reinstall, extract it into `~/restore`, and move what you need into place.
+
+   ```sh
+   $ borgmatic list --repository remote
+   $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
+   ```
 
 # Development
 

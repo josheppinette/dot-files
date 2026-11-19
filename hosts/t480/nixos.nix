@@ -1,4 +1,9 @@
-{ inputs, pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -96,6 +101,19 @@
         ../../modules/home
         ./plasma.nix
       ];
+
+      programs.borgmatic.backups.home.location = {
+        repositories = lib.mkAfter [
+          {
+            path = "ssh://ntnmizx2@ntnmizx2.repo.borgbase.com/./repo";
+            label = "remote";
+          }
+        ];
+        extraConfig = {
+          # The 1Password agent doesn't work while it's locked, so use a separate key.
+          ssh_command = "ssh -i ~/.ssh/borg -o IdentitiesOnly=yes -o IdentityAgent=none";
+        };
+      };
 
       # The font is smaller than on the Mac because of the 150% scaling.
       programs.kitty.settings.font_size = "12.0";

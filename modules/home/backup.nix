@@ -116,6 +116,12 @@ in
     };
   };
 
+  home.activation.createBorgRepository = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    if [ ! -e "${config.xdg.stateHome}/borg" ]; then
+      run ${config.programs.borgmatic.package}/bin/borgmatic repo-create --repository local --encryption none
+    fi
+  '';
+
   services.borgmatic = {
     enable = true;
     frequency = "hourly";
