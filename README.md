@@ -119,6 +119,20 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
    ```
 
+## Anki
+
+Anki's preferences are managed in `modules/home/anki.nix`, so changes made in its Preferences window are reset on the next sync.
+
+**Setting up sync**
+
+1. Open Tools > Preferences > Syncing, log in, then close Preferences. In the warning that follows, choose Show Details and copy the key from `syncKey changed from None to <key>`.
+
+2. Save the key, then restart Anki
+
+   ```sh
+   $ mkdir -p ~/.config/anki && echo '<key>' > ~/.config/anki/sync-key && chmod 600 ~/.config/anki/sync-key
+   ```
+
 ## Google Drive
 
 On the t480, personal Google Drive syncs both ways with `~/GoogleDrive-josheppinette@gmail.com` every 15 minutes, using [rclone bisync](https://rclone.org/bisync/). Google Docs, Sheets and Slides are skipped. When a file changes on both sides, the newer copy wins and the other is kept as `<file>.conflict1`.

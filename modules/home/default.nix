@@ -2,6 +2,7 @@
   imports = [
     ./1password.nix
     ./ai.nix
+    ./anki.nix
     ./backup.nix
     ./dev.nix
     ./firefox.nix
