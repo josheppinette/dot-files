@@ -2,7 +2,7 @@ _Nix configuration for my macOS and Linux machines._
 
 # Installation
 
-## macOS
+**macOS**
 
 1. [Install Nix](https://zero-to-nix.com/start/install/)
 
@@ -36,9 +36,9 @@ _Nix configuration for my macOS and Linux machines._
    $ chsh -s "$(command -v zsh)"
    ```
 
-7. Continue with [Setup](#setup)
+7. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
 
-## NixOS
+**NixOS**
 
 1. Install [NixOS](https://nixos.org/download/) with the graphical installer: choose disk encryption, no desktop, and the username from `hosts/<hostname>/nixos.nix` (or add the machine under `hosts/` and `flake.nix`). The hostname is set by the first build.
 
@@ -66,15 +66,11 @@ _Nix configuration for my macOS and Linux machines._
    $ sudo nixos-rebuild boot --flake ~/Projects/dot-files#<hostname> --option experimental-features 'nix-command flakes'
    ```
 
-5. Continue with [Setup](#setup)
+5. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
 
-## Setup
+# Usage
 
-1. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
-
-2. If the machine backs up to a remote, [create the remote](#creating-the-remote) or [restore from it](#restoring-from-the-remote)
-
-# Backups
+## Backups
 
 `$HOME` is backed up hourly with [borgmatic](https://torsion.org/borgmatic/) to a local repository in `~/.local/state/borg`, and to a remote repository if the machine sets one in `hosts/<hostname>/`. Add a `.nobackup` file to any directory that shouldn't be backed up.
 
@@ -87,7 +83,7 @@ $ borgmatic list --archive latest --find 'package.json'      # find a file
 $ borgmatic extract --archive latest --destination ~/restore # restore files
 ```
 
-## Creating the remote
+**Creating the remote**
 
 1. Create an SSH key, and add `~/.ssh/borg.pub` to the remote
 
@@ -102,7 +98,7 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic key export --repository remote --path <hostname>.key
    ```
 
-## Restoring from the remote
+**Restoring from the remote**
 
 1. Create an SSH key, and add `~/.ssh/borg.pub` to the remote in place of the old one
 
@@ -123,11 +119,11 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
    ```
 
-# Google Drive
+## Google Drive
 
 On the t480, personal Google Drive syncs both ways with `~/GoogleDrive-josheppinette@gmail.com` every 15 minutes, using [rclone bisync](https://rclone.org/bisync/). Google Docs, Sheets and Slides are skipped. When a file changes on both sides, the newer copy wins and the other is kept as `<file>.conflict1`.
 
-## Setting up
+**Setting up**
 
 rclone refreshes its OAuth token, so its config lives in `~/.config/rclone/rclone.conf` rather than in Nix. The sync doesn't run until that file exists.
 
@@ -143,7 +139,7 @@ rclone refreshes its OAuth token, so its config lives in `~/.config/rclone/rclon
    $ rclone bisync gdrive: ~/GoogleDrive-josheppinette@gmail.com --resync --drive-skip-gdocs --create-empty-src-dirs --verbose
    ```
 
-## Checking on it
+**Checking on it**
 
 ```sh
 $ systemctl --user list-timers gdrive-bisync # next and last run
@@ -151,9 +147,9 @@ $ journalctl --user -u gdrive-bisync         # logs
 $ systemctl --user start gdrive-bisync       # sync now
 ```
 
-If a sync fails and asks for `--resync`, rerun step 2 of [Setting up](#setting-up). It keeps files from both sides.
+If a sync fails and asks for `--resync`, rerun step 2 of **Setting up** above. It keeps files from both sides.
 
-# Local AI
+## Local AI
 
 Ollama runs local models on both machines. On macOS, `pkgs/ollama.nix` replaces the nixpkgs build, which lacks the much faster MLX engine.
 
@@ -169,7 +165,7 @@ $ ollama launch pi --model <model>
 
 # Development
 
-## Dev Shell
+**Dev Shell**
 
 Load the dev shell (formatters, pre-commit) with direnv:
 
@@ -178,7 +174,7 @@ $ direnv allow
 $ pre-commit install
 ```
 
-## Organization
+**Organization**
 
 - `flake.nix`: declares each machine by hostname
 - `hosts/<hostname>/`: machine-specific configuration
@@ -186,9 +182,9 @@ $ pre-commit install
 
 Handle macOS and Linux differences inline with `pkgs.stdenv.isDarwin`. Avoid custom options and frameworks like flake-parts until more machines need them.
 
-## Updating
+**Updating**
 
-### Weekly: update inputs
+_Weekly: update inputs_
 
 Pulls security fixes and package updates within the current release.
 
@@ -200,7 +196,7 @@ $ git commit -am "update flake" && git push
 
 Then run `git pull && ./sync.sh` on the other machines.
 
-### Every six months: upgrade the release
+_Every six months: upgrade the release_
 
 nixpkgs releases in May and November (`YY.05`, `YY.11`), and each release gets fixes for about seven months. Upgrade within a month of each release.
 
