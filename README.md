@@ -123,6 +123,36 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
    ```
 
+# Google Drive
+
+On the t480, personal Google Drive syncs both ways with `~/GoogleDrive-josheppinette@gmail.com` every 15 minutes, using [rclone bisync](https://rclone.org/bisync/). Google Docs, Sheets and Slides are skipped. When a file changes on both sides, the newer copy wins and the other is kept as `<file>.conflict1`.
+
+## Setting up
+
+rclone refreshes its OAuth token, so its config lives in `~/.config/rclone/rclone.conf` rather than in Nix. The sync doesn't run until that file exists.
+
+1. Create a remote named `gdrive` of type `drive` with scope `drive`, using [your own client ID](https://rclone.org/drive/#making-your-own-client-id)
+
+   ```sh
+   $ rclone config
+   ```
+
+2. Run the first sync by hand, which sets the baseline that later syncs compare against
+
+   ```sh
+   $ rclone bisync gdrive: ~/GoogleDrive-josheppinette@gmail.com --resync --drive-skip-gdocs --create-empty-src-dirs --verbose
+   ```
+
+## Checking on it
+
+```sh
+$ systemctl --user list-timers gdrive-bisync # next and last run
+$ journalctl --user -u gdrive-bisync         # logs
+$ systemctl --user start gdrive-bisync       # sync now
+```
+
+If a sync fails and asks for `--resync`, rerun step 2 of [Setting up](#setting-up). It keeps files from both sides.
+
 # Local AI
 
 Ollama runs local models on both machines. On macOS, `pkgs/ollama.nix` replaces the nixpkgs build, which lacks the much faster MLX engine.
@@ -189,6 +219,7 @@ nixpkgs releases in May and November (`YY.05`, `YY.11`), and each release gets f
 - [nixos-hardware](https://github.com/NixOS/nixos-hardware)
 - [nh](https://github.com/nix-community/nh)
 - [borgmatic](https://torsion.org/borgmatic/)
+- [rclone bisync](https://rclone.org/bisync/)
 - [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world)
 

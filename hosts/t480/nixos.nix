@@ -99,6 +99,7 @@
     users.josh = {
       imports = [
         ../../modules/home
+        ./gdrive.nix
         ./plasma.nix
       ];
 
