@@ -1,8 +1,9 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
   programs.anki = {
     enable = true;
+    addons = [ pkgs.ankiAddons.anki-connect ];
     profiles."User 1" = {
       default = true;
       sync = {
