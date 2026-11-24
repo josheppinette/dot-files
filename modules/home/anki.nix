@@ -3,7 +3,11 @@
 {
   programs.anki = {
     enable = true;
-    addons = [ pkgs.ankiAddons.anki-connect ];
+    addons = with pkgs.ankiAddons; [
+      anki-connect
+      passfail2
+      review-heatmap
+    ];
     profiles."User 1" = {
       default = true;
       sync = {
