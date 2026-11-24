@@ -19,11 +19,11 @@
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 16 * 1024;
+      size = 32 * 1024;
     }
   ];
   boot.resumeDevice = "/dev/mapper/luks-a4843226-ebdf-4932-823f-cddaa4ed9fd8";
-  boot.kernelParams = [ "resume_offset=246579200" ];
+  boot.kernelParams = [ "resume_offset=240189440" ];
 
   # Closing the lid suspends, then hibernates after 2h on battery (or sooner if
   # the battery runs low). On AC it stays suspended.
