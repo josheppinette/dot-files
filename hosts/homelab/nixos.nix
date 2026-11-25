@@ -80,6 +80,67 @@
     };
   };
 
+  services.open-webui = {
+    enable = true;
+    environment = {
+      OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+      WEBUI_URL = "https://chat.lab.josheppinette.com";
+      ANONYMIZED_TELEMETRY = "False";
+      DO_NOT_TRACK = "True";
+      SCARF_NO_ANALYTICS = "True";
+    };
+  };
+
+  services.homepage-dashboard = {
+    enable = true;
+    allowedHosts = "lab.josheppinette.com";
+    settings.title = "Homelab";
+    services = [
+      {
+        Apps = [
+          {
+            Chat = {
+              href = "https://chat.lab.josheppinette.com";
+              icon = "open-webui.png";
+            };
+          }
+        ];
+      }
+    ];
+    widgets = [
+      {
+        resources = {
+          cpu = true;
+          memory = true;
+          disk = "/tank";
+        };
+      }
+    ];
+  };
+
+  # DNS points these at the tailnet IP, so only the tailnet can reach them.
+  services.caddy = {
+    enable = true;
+    package = pkgs.caddy.withPlugins {
+      plugins = [ "github.com/caddy-dns/cloudflare@v0.2.4" ];
+      hash = "sha256-tubXIDCJnO2mvdnPlZclwDhNGaeeYLSt7lnni3+pXDo=";
+    };
+    environmentFile = "/etc/caddy/cloudflare.env";
+    globalConfig = "acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}";
+    virtualHosts."lab.josheppinette.com".extraConfig = ''
+      reverse_proxy 127.0.0.1:8082
+    '';
+    virtualHosts."*.lab.josheppinette.com".extraConfig = ''
+      @chat host chat.lab.josheppinette.com
+      handle @chat {
+        reverse_proxy 127.0.0.1:8080
+      }
+      handle {
+        abort
+      }
+    '';
+  };
+
   programs.nix-ld.enable = true;
 
   programs.zsh.enable = true;

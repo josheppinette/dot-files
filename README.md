@@ -179,6 +179,8 @@ $ ollama launch pi --model <model> # code with pi
 $ ollama ps                        # loaded models, and how much is on the GPU
 ```
 
+To chat in the browser, open [Open WebUI](https://openwebui.com) from the [dashboard](https://lab.josheppinette.com/). It uses `homelab`'s models.
+
 ## Storage
 
 _Machines: homelab_
@@ -206,6 +208,30 @@ $ sudo chown josh: /tank
 ```
 
 A reinstall leaves the pool on the disks, so skip this.
+
+## Dashboard
+
+_Machines: homelab_
+
+[lab.josheppinette.com](https://lab.josheppinette.com) is a [Homepage](https://gethomepage.dev) linking to the apps on `homelab`. Its DNS records point at `homelab`'s tailnet address, so it only works on the VPN.
+
+[Caddy](https://caddyserver.com) serves each app on its own subdomain of `lab`, with a wildcard certificate from Let's Encrypt. To add one, add its link to `services.homepage-dashboard` and its subdomain to `services.caddy`.
+
+```sh
+$ journalctl -u caddy # certificate and proxy errors
+```
+
+**Setting up**
+
+1. In Cloudflare, add `A` records for `lab` and `*.lab` pointing at `tailscale ip -4`, with proxying off
+
+2. Create a Cloudflare API token from the Edit zone DNS template, limited to `josheppinette.com`, and save it on `homelab`
+
+   ```sh
+   $ sudo install -d -m 755 /etc/caddy
+   $ (umask 077; echo 'CLOUDFLARE_API_TOKEN=<token>' | sudo tee /etc/caddy/cloudflare.env >/dev/null)
+   $ sudo systemctl restart caddy
+   ```
 
 ## File Sync
 
