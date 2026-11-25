@@ -1,5 +1,13 @@
 _Nix configuration for my macOS and Linux machines._
 
+# Machines
+
+| Host          | OS               | Use             |
+| ------------- | ---------------- | --------------- |
+| `MacBook-Pro` | macOS            | Work laptop     |
+| `t480`        | NixOS            | Personal laptop |
+| `homelab`     | NixOS (headless) | Personal server |
+
 # Installation
 
 **macOS**
@@ -36,13 +44,11 @@ _Nix configuration for my macOS and Linux machines._
    $ chsh -s "$(command -v zsh)"
    ```
 
-7. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
-
 **NixOS**
 
-1. Install [NixOS](https://nixos.org/download/) with the graphical installer: choose disk encryption, no desktop, and the username from `hosts/<hostname>/nixos.nix` (or add the machine under `hosts/` and `flake.nix`). The hostname is set by the first build.
+1. Install [NixOS](https://nixos.org/download/) with the graphical installer: choose disk encryption (except on servers, which must boot unattended), no desktop, and the username from `hosts/<hostname>/nixos.nix` (or add the machine under `hosts/` and `flake.nix`). The hostname is set by the first build.
 
-2. Clone, in a shell with git
+2. Clone, in a shell with git (on servers, skip `set-url`: without 1Password, they pull over HTTPS)
 
    ```sh
    $ nix-shell -p git
@@ -58,7 +64,7 @@ _Nix configuration for my macOS and Linux machines._
    $ exit
    ```
 
-   The installer also puts some encryption settings in `/etc/nixos/configuration.nix` (`boot.initrd.luks.devices` for swap, `boot.initrd.secrets` for the keyfile). Copy any it has into `hosts/<hostname>/nixos.nix`, or the next boot may hang waiting for them.
+   With disk encryption, the installer also puts some settings in `/etc/nixos/configuration.nix` (`boot.initrd.luks.devices` for swap, `boot.initrd.secrets` for the keyfile). Copy any it has into `hosts/<hostname>/nixos.nix`, or the next boot may hang waiting for them.
 
 4. Build, then reboot
 
@@ -66,11 +72,45 @@ _Nix configuration for my macOS and Linux machines._
    $ sudo nixos-rebuild boot --flake ~/Projects/dot-files#<hostname> --option experimental-features 'nix-command flakes'
    ```
 
-5. Sign in to 1Password, and turn on its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) (skip its SSH config step)
+After installing, follow **Setting up** in each Usage section for the machine.
 
 # Usage
 
+## Passwords
+
+_Machines: MacBook-Pro, t480_
+
+[1Password](https://1password.com) holds passwords and SSH keys. Its [SSH agent](https://developer.1password.com/docs/ssh/get-started/) serves the keys to `git` and `ssh`.
+
+**Setting up**
+
+1. Sign in to 1Password, and turn on its SSH agent (skip its SSH config step)
+
+## VPN
+
+_Machines: t480, homelab_
+
+[Tailscale](https://tailscale.com) connects the machines into a global private network (a tailnet), so they reach each other by name.
+
+```sh
+$ tailscale status         # machines on the tailnet, and which are online
+$ tailscale ping <machine> # whether it's reachable, and if directly or through a relay
+$ tailscale ip             # this machine's tailnet addresses
+```
+
+**Setting up**
+
+1. Join the tailnet, and approve the machine in the [admin console](https://login.tailscale.com/admin/machines)
+
+   ```sh
+   $ sudo tailscale up
+   ```
+
+2. On servers, disable key expiry for the machine in the admin console, or it drops off the tailnet every 180 days
+
 ## Backups
+
+_Machines: all_
 
 `$HOME` is backed up hourly with [borgmatic](https://torsion.org/borgmatic/) to a local repository in `~/.local/state/borg`, and to a remote repository if the machine sets one in `hosts/<hostname>/`. Add a `.nobackup` file to any directory that shouldn't be backed up.
 
@@ -119,23 +159,67 @@ $ borgmatic extract --archive latest --destination ~/restore # restore files
    $ borgmatic extract --repository remote --archive <archive> --destination ~/restore
    ```
 
-## Anki
+## LLMs
 
-Anki's preferences are managed in `modules/home/anki.nix`, so changes made in its Preferences window are reset on the next sync.
+_Machines: all_
 
-**Setting up sync**
+[Ollama](https://ollama.com) runs models on `homelab` and `MacBook-Pro`. `t480` uses `homelab`'s over the VPN, so the commands are the same everywhere.
 
-1. Open Tools > Preferences > Syncing, log in, then close Preferences. In the warning that follows, choose Show Details and copy the key from `syncKey changed from None to <key>`.
+| Model                    | Use                                                     |
+| ------------------------ | ------------------------------------------------------- |
+| `qwen3.6:35b-a3b-coding` | Coding with pi, and anything that needs care            |
+| `qwen3.5:9b`             | Quick questions, when the coding model is slow to start |
 
-2. Save the key, then restart Anki
+On macOS, prefer MLX models, like the `-nvfp4` tags, which run much faster.
 
-   ```sh
-   $ mkdir -p ~/.config/anki && echo '<key>' > ~/.config/anki/sync-key && chmod 600 ~/.config/anki/sync-key
-   ```
+```sh
+$ ollama pull <model>              # download
+$ ollama run <model>               # chat
+$ ollama launch pi --model <model> # code with pi
+$ ollama ps                        # loaded models, and how much is on the GPU
+```
 
-## Google Drive
+## Storage
 
-On the t480, personal Google Drive syncs both ways with `~/GoogleDrive-josheppinette@gmail.com` every 15 minutes, using [rclone bisync](https://rclone.org/bisync/). Google Docs, Sheets and Slides are skipped. When a file changes on both sides, the newer copy wins and the other is kept as `<file>.conflict1`.
+_Machines: homelab_
+
+`/tank` is a [ZFS](https://openzfs.github.io/openzfs-docs/) pool of the four 6TB WD Reds as RAIDZ2: about 10.4TB usable, and any two disks can fail. It's scrubbed monthly, and smartd watches the disks.
+
+[sanoid](https://github.com/jimsalterjrs/sanoid) snapshots it every hour, keeping 24 hourly, 30 daily and 6 monthly snapshots. Copy deleted or overwritten files back from `/tank/.zfs/snapshot/<snapshot>/`.
+
+```sh
+$ zpool status tank         # disk health and scrub results
+$ zfs list -t snapshot tank # snapshots
+$ sudo journalctl -u smartd # SMART warnings
+```
+
+To replace a failed disk, `sudo zpool replace tank <old-disk-id> /dev/disk/by-id/<new-disk-id>`, then watch the rebuild in `zpool status`.
+
+**Setting up**
+
+The configuration imports the pool at boot, but can't create it. On new disks, create it with:
+
+```sh
+$ sudo zpool create -o ashift=12 -O compression=lz4 -O atime=off -O xattr=sa -O acltype=posixacl -O mountpoint=/tank \
+    tank raidz2 /dev/disk/by-id/ata-WDC_WD60EFRX-68MYMN1_WD-{WX31DB44K20N,WX21DC42E8UA,WX11DC449EFU,WX11DC4FK82S}
+$ sudo chown josh: /tank
+```
+
+A reinstall leaves the pool on the disks, so skip this.
+
+## File Sync
+
+_Machines: t480_
+
+Personal Google Drive syncs both ways with `~/GoogleDrive-josheppinette@gmail.com` every 15 minutes, using [rclone bisync](https://rclone.org/bisync/). Google Docs, Sheets and Slides are skipped. When a file changes on both sides, the newer copy wins and the other is kept as `<file>.conflict1`.
+
+```sh
+$ systemctl --user list-timers gdrive-bisync # next and last run
+$ journalctl --user -u gdrive-bisync         # logs
+$ systemctl --user start gdrive-bisync       # sync now
+```
+
+If a sync fails and asks for `--resync`, rerun step 2 of **Setting up** below. It keeps files from both sides.
 
 **Setting up**
 
@@ -153,29 +237,21 @@ rclone refreshes its OAuth token, so its config lives in `~/.config/rclone/rclon
    $ rclone bisync gdrive: ~/GoogleDrive-josheppinette@gmail.com --resync --drive-skip-gdocs --create-empty-src-dirs --verbose
    ```
 
-**Checking on it**
+## Flashcards
 
-```sh
-$ systemctl --user list-timers gdrive-bisync # next and last run
-$ journalctl --user -u gdrive-bisync         # logs
-$ systemctl --user start gdrive-bisync       # sync now
-```
+_Machines: t480_
 
-If a sync fails and asks for `--resync`, rerun step 2 of **Setting up** above. It keeps files from both sides.
+Flashcards are in [Anki](https://apps.ankiweb.net), synced with AnkiWeb. Its preferences are managed in `modules/home/anki.nix`, so changes made in its Preferences window are reset on the next sync.
 
-## Local AI
+**Setting up**
 
-Ollama runs local models on both machines. On macOS, `pkgs/ollama.nix` replaces the nixpkgs build, which lacks the much faster MLX engine.
+1. Open Tools > Preferences > Syncing, log in, then close Preferences. In the warning that follows, choose Show Details and copy the key from `syncKey changed from None to <key>`.
 
-| Host        | Model                          | Use                                            |
-| ----------- | ------------------------------ | ---------------------------------------------- |
-| MacBook-Pro | `qwen3.6:35b-a3b-coding-nvfp4` | Coding with pi                                 |
-| t480        | `qwen3.5:4b`                   | Quick questions only, since it runs on the CPU |
+2. Save the key, then restart Anki
 
-```sh
-$ ollama pull <model>
-$ ollama launch pi --model <model>
-```
+   ```sh
+   $ mkdir -p ~/.config/anki && echo '<key>' > ~/.config/anki/sync-key && chmod 600 ~/.config/anki/sync-key
+   ```
 
 # Development
 
@@ -192,7 +268,7 @@ $ pre-commit install
 
 - `flake.nix`: declares each machine by hostname
 - `hosts/<hostname>/`: machine-specific configuration
-- `modules/home/`: Home Manager configuration shared by all machines, one file per topic
+- `modules/home/`: Home Manager configuration, one file per topic. Every machine imports `base.nix`, machines with a desktop also import `desktop.nix`, and anything else is imported by topic.
 
 Handle macOS and Linux differences inline with `pkgs.stdenv.isDarwin`. Avoid custom options and frameworks like flake-parts until more machines need them.
 
@@ -228,8 +304,6 @@ nixpkgs releases in May and November (`YY.05`, `YY.11`), and each release gets f
 - [NixOS options](https://search.nixos.org/options)
 - [nixos-hardware](https://github.com/NixOS/nixos-hardware)
 - [nh](https://github.com/nix-community/nh)
-- [borgmatic](https://torsion.org/borgmatic/)
-- [rclone bisync](https://rclone.org/bisync/)
 - [Determinate Nix](https://docs.determinate.systems/determinate-nix/)
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world)
 

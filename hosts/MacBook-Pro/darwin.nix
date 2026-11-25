@@ -15,7 +15,12 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     users.joshep = {
-      imports = [ ../../modules/home ];
+      imports = [
+        ../../modules/home/base.nix
+        ../../modules/home/desktop.nix
+      ];
+
+      services.ollama.enable = true;
 
       programs.git.settings.user.email = "josh.eppinette@realtruck.com";
     };

@@ -1,16 +1,11 @@
 {
   imports = [
-    ./1password.nix
-    ./ai.nix
-    ./anki.nix
+    ./llm.nix
     ./backup.nix
     ./dev.nix
-    ./firefox.nix
     ./git.nix
-    ./kitty.nix
     ./neovim
     ./nix.nix
-    ./obsidian.nix
     ./shell.nix
     ./ssh.nix
     ./tmux.nix

@@ -39,6 +39,8 @@
   networking.hostName = "t480";
   networking.networkmanager.enable = true;
 
+  services.tailscale.enable = true;
+
   services.automatic-timezoned.enable = true;
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -98,7 +100,9 @@
     useUserPackages = true;
     users.josh = {
       imports = [
-        ../../modules/home
+        ../../modules/home/base.nix
+        ../../modules/home/desktop.nix
+        ../../modules/home/anki.nix
         ./gdrive.nix
         ./plasma.nix
       ];
@@ -115,6 +119,8 @@
           ssh_command = "ssh -i ~/.ssh/borg -o IdentitiesOnly=yes -o IdentityAgent=none";
         };
       };
+
+      home.sessionVariables.OLLAMA_HOST = "homelab:11434";
 
       # The font is smaller than on the Mac because of the 150% scaling.
       programs.kitty.settings.font_size = "12.0";

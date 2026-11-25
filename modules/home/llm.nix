@@ -4,9 +4,8 @@
   home.packages = [
     pkgs.files-to-prompt
     pkgs.llm-agents.pi
+    pkgs.ollama
   ];
-
-  services.ollama.enable = true;
 
   home.file.".claude/status.sh" = {
     executable = true;

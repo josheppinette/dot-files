@@ -90,6 +90,7 @@
     {
       darwinConfigurations.MacBook-Pro = mkDarwin "aarch64-darwin" ./hosts/MacBook-Pro/darwin.nix;
 
+      nixosConfigurations.homelab = mkNixos "x86_64-linux" ./hosts/homelab/nixos.nix;
       nixosConfigurations.t480 = mkNixos "x86_64-linux" ./hosts/t480/nixos.nix;
 
       devShells = forAllSystems (system: {
