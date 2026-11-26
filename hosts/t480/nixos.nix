@@ -67,6 +67,14 @@
     pulse.enable = true;
   };
   hardware.bluetooth.enable = true;
+
+  services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   services.fwupd.enable = true;
 
   # Limit charging to 75-80% to extend the lifespan of both batteries.
